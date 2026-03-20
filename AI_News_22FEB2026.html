@@ -1,0 +1,376 @@
+
+        <!DOCTYPE html>
+        <html lang="en" data-theme="dark">
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>AI NEWS OF THE DAY - 22 FEBRUARY 2026</title>
+            <style>
+                :root[data-theme="dark"] {
+                    --bg: #0b0f1a;
+                    --surface: #161b2c;
+                    --accent: #38bdf8;
+                    --text-p: #f1f5f9;
+                    --text-s: #94a3b8;
+                    --border: rgba(255, 255, 255, 0.08);
+                    --toggle-bg: rgba(255, 255, 255, 0.05);
+                }
+
+                :root[data-theme="light"] {
+                    --bg: #f8fafc;
+                    --surface: #ffffff;
+                    --accent: #0284c7;
+                    --text-p: #0f172a;
+                    --text-s: #475569;
+                    --border: rgba(15, 23, 42, 0.08);
+                    --toggle-bg: rgba(15, 23, 42, 0.05);
+                }
+
+                * { box-sizing: border-box; transition: background-color 0.4s ease, color 0.4s ease; }
+
+                body { 
+                    font-family: 'Inter', system-ui, -apple-system, sans-serif; 
+                    background-color: var(--bg); 
+                    color: var(--text-p); 
+                    margin: 0; 
+                    padding: 4rem 1.25rem;
+                    display: flex;
+                    justify-content: center;
+                    -webkit-font-smoothing: antialiased;
+                }
+
+                .container { width: 100%; max-width: 650px; position: relative; }
+
+                /* Theme Toggle Pill */
+                .theme-toggle {
+                    position: fixed;
+                    top: 1.5rem;
+                    right: 1.5rem;
+                    background: var(--toggle-bg);
+                    backdrop-filter: blur(12px);
+                    -webkit-backdrop-filter: blur(12px);
+                    border: 1px solid var(--border);
+                    padding: 0.4rem;
+                    border-radius: 2rem;
+                    cursor: pointer;
+                    display: flex;
+                    gap: 0.2rem;
+                    z-index: 100;
+                }
+
+                .theme-btn {
+                    border: none;
+                    background: none;
+                    font-size: 0.65rem;
+                    font-weight: 800;
+                    color: var(--text-s);
+                    padding: 0.5rem 0.9rem;
+                    border-radius: 1.5rem;
+                    cursor: pointer;
+                    text-transform: uppercase;
+                    letter-spacing: 0.05rem;
+                }
+
+                .active-theme { background: var(--accent); color: white !important; }
+
+                /* Updated Header Hierarchy */
+                header { margin-bottom: 4rem; text-align: left; }
+                
+                .kicker { 
+                    font-size: 0.75rem; 
+                    font-weight: 800; 
+                    letter-spacing: 0.2rem; 
+                    color: var(--accent); 
+                    text-transform: uppercase; 
+                    margin-bottom: 0.6rem;
+                }
+
+                .date-title { 
+                    font-size: 2.2rem; 
+                    font-weight: 800; 
+                    margin: 0; 
+                    letter-spacing: -0.03em;
+                    line-height: 1;
+                }
+
+                .meta-info { 
+                    color: var(--text-s); 
+                    font-size: 0.7rem; 
+                    font-family: ui-monospace, monospace; 
+                    margin-top: 0.8rem;
+                }
+
+                /* Minimalist Accordion */
+                .accordion-item { border-bottom: 1px solid var(--border); }
+
+                .headline-btn {
+                    width: 100%;
+                    padding: 1.5rem 0;
+                    background: none;
+                    border: none;
+                    text-align: left;
+                    font-size: 1.05rem;
+                    font-weight: 500;
+                    line-height: 1.4;
+                    color: var(--text-p);
+                    cursor: pointer;
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                    outline: none;
+                }
+
+                .headline-btn span { padding-right: 1.5rem; }
+                .headline-btn:hover { color: var(--accent); }
+
+                .chevron { 
+                    width: 18px; 
+                    height: 18px; 
+                    stroke: var(--text-s); 
+                    stroke-width: 2.5; 
+                    fill: none; 
+                    flex-shrink: 0;
+                    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); 
+                }
+
+                .active .chevron { transform: rotate(180deg); stroke: var(--accent); }
+
+                .content { 
+                    max-height: 0; 
+                    overflow: hidden; 
+                    transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1); 
+                }
+
+                .summary-text { 
+                    color: var(--text-s); 
+                    font-size: 0.95rem; 
+                    line-height: 1.8; 
+                    margin: 0 0 1.5rem 0; 
+                }
+
+                .source-link {
+                    font-size: 0.75rem;
+                    color: var(--accent);
+                    text-decoration: none;
+                    font-weight: 700;
+                    text-transform: lowercase;
+                    display: inline-flex;
+                    align-items: center;
+                }
+
+                .source-link::before { content: '→'; margin-right: 0.5rem; }
+                .source-link:hover { text-decoration: underline; }
+
+                footer { 
+                    margin-top: 8rem; 
+                    padding-top: 2rem; 
+                    border-top: 1px solid var(--border); 
+                    color: var(--text-s); 
+                    font-size: 0.65rem; 
+                    letter-spacing: 0.15rem; 
+                    text-transform: uppercase; 
+                }
+
+                /* Mobile Adjustments */
+                @media (max-width: 600px) {
+                    .date-title { font-size: 1.8rem; }
+                    body { padding-top: 6rem; }
+                }
+            </style>
+        </head>
+        <body>
+            <div class="theme-toggle" id="theme-switcher">
+                <button class="theme-btn" data-mode="light">Light</button>
+                <button class="theme-btn active-theme" data-mode="dark">Dark</button>
+            </div>
+
+            <div class="container">
+                <header>
+                    <div class="kicker">AI NEWS OF THE DAY</div>
+                    <h1 class="date-title">22 FEBRUARY 2026</h1>
+                    <div class="meta-info">SYNTHESIZED AT 11:52 AM</div>
+                </header>
+
+                <div id="accordion-group">
+        
+                <div class="accordion-item">
+                    <button class="headline-btn">
+                        <span>NVIDIA Releases DreamDojo: An Open-Source Robot World Model Trained on 44,711 Hours of Real-World Human Video Data</span>
+                        <svg class="chevron" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6" /></svg>
+                    </button>
+                    <div class="content">
+                        <div style="padding-bottom: 2.5rem;">
+                            <p class="summary-text">NVIDIA has released DreamDojo, a fully open-source robot world model that addresses the long-term challenge of simulating robots with physics and perfect 3D models. By leveraging human egocentric videos to learn from 44k+ hours of data, DreamDojo achieves high-fidelity simulations at speeds of up to 10.81 FPS through distillation techniques. This enables advanced applications such as reliable policy evaluation, model-based planning, and live teleoperation, showcasing the potential for real-world success rates of over 17% when used for these tasks.</p>
+                            <a href="https://www.marktechpost.com/2026/02/20/nvidia-releases-dreamdojo-an-open-source-robot-world-model-trained-on-44711-hours-of-real-world-human-video-data/" class="source-link" target="_blank">marktechpost.com</a>
+                        </div>
+                    </div>
+                </div>
+            
+                <div class="accordion-item">
+                    <button class="headline-btn">
+                        <span>OpenAI Launches Frontier, a Platform to Build, Deploy, and Manage AI Agents Across the Enterprise</span>
+                        <svg class="chevron" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6" /></svg>
+                    </button>
+                    <div class="content">
+                        <div style="padding-bottom: 2.5rem;">
+                            <p class="summary-text">OpenAI's Frontier platform aims to bridge the gap between enterprise AI adoption and seamless integration with existing systems and workflows by providing shared context, onboarding support, and identity governance. This enables agents to effectively perform within their designated roles, reducing complexity and increasing reliability. By leveraging open standards and existing data, companies can integrate AI coworkers into their operations without replacing or abandoning existing systems.</p>
+                            <a href="https://www.infoq.com/news/2026/02/openai-frontier-agent-platform/?utm_campaign=infoq_content&utm_source=infoq&utm_medium=feed&utm_term=AI%2C+ML+%26+Data+Engineering-news" class="source-link" target="_blank">infoq.com</a>
+                        </div>
+                    </div>
+                </div>
+            
+                <div class="accordion-item">
+                    <button class="headline-btn">
+                        <span>A New Google AI Research Proposes Deep-Thinking Ratio to Improve LLM Accuracy While Cutting Total Inference Costs by Half</span>
+                        <svg class="chevron" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6" /></svg>
+                    </button>
+                    <div class="content">
+                        <div style="padding-bottom: 2.5rem;">
+                            <p class="summary-text">The University of Virginia and Google researchers have found that simply adding more tokens to a Large Language Model (LLM) does not necessarily lead to better accuracy, but rather "overthinking" or amplifying mistakes. This is because the model gets stuck in loops, repeats redundant steps, or amplifies its own errors when predicting tokens, leading to decreased accuracy.</p>
+                            <a href="https://www.marktechpost.com/2026/02/21/a-new-google-ai-research-proposes-deep-thinking-ratio-to-improve-llm-accuracy-while-cutting-total-inference-costs-by-half/" class="source-link" target="_blank">marktechpost.com</a>
+                        </div>
+                    </div>
+                </div>
+            
+                <div class="accordion-item">
+                    <button class="headline-btn">
+                        <span>The 7 Biggest Misconceptions About AI Agents (and Why They Matter)</span>
+                        <svg class="chevron" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6" /></svg>
+                    </button>
+                    <div class="content">
+                        <div style="padding-bottom: 2.5rem;">
+                            <p class="summary-text">Gemini AI has made significant strides in its development, with a large window handling tasks efficiently. This achievement is attributed to advancements in natural language processing and machine learning algorithms. The technology enables seamless integration of AI into various applications, making it an essential tool for businesses and organizations. As a result, companies are leveraging Gemini's capabilities to enhance their operations and improve customer experiences.</p>
+                            <a href="https://machinelearningmastery.com/the-7-biggest-misconceptions-about-ai-agents-and-why-they-matter/" class="source-link" target="_blank">machinelearningmastery.com</a>
+                        </div>
+                    </div>
+                </div>
+            
+                <div class="accordion-item">
+                    <button class="headline-btn">
+                        <span>Databricks Introduces Lakebase, a PostgreSQL Database for AI Workloads</span>
+                        <svg class="chevron" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6" /></svg>
+                    </button>
+                    <div class="content">
+                        <div style="padding-bottom: 2.5rem;">
+                            <p class="summary-text">Databricks has announced the general availability of Lakebase, a serverless PostgreSQL-based OLTP database that scales compute and storage independently, providing a hybrid solution for real-time apps and AI workloads. This new service integrates with Databricks' platform to simplify development, improve reliability, and keep operational and analytical data in sync.</p>
+                            <a href="https://www.infoq.com/news/2026/02/databricks-lakebase-postgresql/?utm_campaign=infoq_content&utm_source=infoq&utm_medium=feed&utm_term=AI%2C+ML+%26+Data+Engineering-news" class="source-link" target="_blank">infoq.com</a>
+                        </div>
+                    </div>
+                </div>
+            
+                <div class="accordion-item">
+                    <button class="headline-btn">
+                        <span>Google mugs Microsoft for monster Unilever AI mission</span>
+                        <svg class="chevron" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6" /></svg>
+                    </button>
+                    <div class="content">
+                        <div style="padding-bottom: 2.5rem;">
+                            <p class="summary-text">Unilever is shifting its entire "integrated data and cloud platform" to Google Cloud Platform (GCP) after a five-year deal with the tech giant. The company completed its Azure-only migration just three years ago, but has now moved to GCP's cloud infrastructure for better AI capabilities. This move will see Unilever tap into Vertex AI managed platform, which is expected to unlock new possibilities in data analysis and processing. As a result, the majority of 2023 workloads that were previously on Azure are now being transferred to GCP.</p>
+                            <a href="https://www.thestack.technology/unilever-google-cloud-deal-azure-migration-ai/" class="source-link" target="_blank">thestack.technology</a>
+                        </div>
+                    </div>
+                </div>
+            
+                <div class="accordion-item">
+                    <button class="headline-btn">
+                        <span>Big Tech Says Generative AI Will Save the Planet. It Doesn’t Offer Much Proof</span>
+                        <svg class="chevron" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6" /></svg>
+                    </button>
+                    <div class="content">
+                        <div style="padding-bottom: 2.5rem;">
+                            <p class="summary-text">Tech companies are locked in a battle to develop artificial intelligence (AI) with potentially massive implications for climate change. Google claims its AI can cut global greenhouse gas emissions by up to 10% by 2030, but an analysis of the company's own data and that of consulting group BCG reveals this estimate is based on hypothetical AI models rather than actual proof. The report found that only a quarter of tech companies' claims about AI's impact on the planet were backed by academic research, while more than a third did not publicly cite any evidence at all. This raises questions about the accuracy and rigor behind these claims, with some experts warning against taking self-interested assertions at face value without sufficient support.</p>
+                            <a href="https://www.wired.com/story/big-tech-says-generative-ai-will-save-the-planet-it-doesnt-offer-much-proof/" class="source-link" target="_blank">wired.com</a>
+                        </div>
+                    </div>
+                </div>
+            
+                <div class="accordion-item">
+                    <button class="headline-btn">
+                        <span>Moonshot AI Releases Open-Weight Kimi K2.5 Model with Vision and Agent Swarm Capabilities</span>
+                        <svg class="chevron" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6" /></svg>
+                    </button>
+                    <div class="content">
+                        <div style="padding-bottom: 2.5rem;">
+                            <p class="summary-text">Moonshot AI released Kimi K2.5, their latest open-weight multimodal LLM, which excels in coding tasks with benchmark scores comparable to frontier models such as GPT-5 and Gemini. The new model features an agent swarm mode that can direct up to 100 sub-agents for parallel workflow, making it suitable for front-end development tasks. Kimi K2.5 builds on the previous Kimi K2 MoE LLM, adding vision functionality to its text-only predecessor, which supports four modes of operation: Instant, Thinking, Agent, and Agent Swarm.</p>
+                            <a href="https://www.infoq.com/news/2026/02/kimi-k25-swarm/?utm_campaign=infoq_content&utm_source=infoq&utm_medium=feed&utm_term=AI%2C+ML+%26+Data+Engineering-news" class="source-link" target="_blank">infoq.com</a>
+                        </div>
+                    </div>
+                </div>
+            
+                <div class="accordion-item">
+                    <button class="headline-btn">
+                        <span>Is There a Community Edition of Palantir? Meet OpenPlanter: An Open Source Recursive AI Agent for Your Micro Surveillance Use Cases</span>
+                        <svg class="chevron" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6" /></svg>
+                    </button>
+                    <div class="content">
+                        <div style="padding-bottom: 2.5rem;">
+                            <p class="summary-text">OpenPlanter, an open-source project, is giving governments and corporations a new tool to track individuals by leveraging recursive-language-model investigation agents. By ingesting disparate structured and unstructured data sources, OpenPlanter uses Large Language Models (LLMs) to identify entities across massive datasets and probabilistically detect anomalies in government spending and private interests. This approach enables the system to handle complex investigative objectives that are too large for a single agent to tackle alone, making it suitable for high-performance requirements of 2026.</p>
+                            <a href="https://www.marktechpost.com/2026/02/21/is-there-a-community-edition-of-palantir-meet-openplanter-an-open-source-recursive-ai-agent-for-your-micro-surveillance-use-cases/" class="source-link" target="_blank">marktechpost.com</a>
+                        </div>
+                    </div>
+                </div>
+            
+                <div class="accordion-item">
+                    <button class="headline-btn">
+                        <span>How to Build Transparent AI Agents: Traceable Decision-Making with Audit Trails and Human Gates</span>
+                        <svg class="chevron" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6" /></svg>
+                    </button>
+                    <div class="content">
+                        <div style="padding-bottom: 2.5rem;">
+                            <p class="summary-text">Here is a cohesive narrative summary of the provided news article:
+
+A new tutorial from LangGraph and OpenAI demonstrates how to build an agentic workflow that makes every decision traceable, auditable, and explicitly governed by human approval. The system logs each thought, action, and observation into a tamper-evident audit ledger while enforcing dynamic permissioning for high-risk operations. This achievement aligns with modern governance expectations, making it a practical feature for governance systems.</p>
+                            <a href="https://www.marktechpost.com/2026/02/19/how-to-build-transparent-ai-agents-traceable-decision-making-with-audit-trails-and-human-gates/" class="source-link" target="_blank">marktechpost.com</a>
+                        </div>
+                    </div>
+                </div>
+            
+                </div>
+                <footer>Prepared by Agentic AI services</footer>
+            </div>
+
+            <script>
+                // Exclusive Accordion Interaction
+                document.querySelectorAll('.headline-btn').forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        const content = btn.nextElementSibling;
+                        const parent = btn.parentElement;
+                        const isOpen = content.style.maxHeight;
+
+                        document.querySelectorAll('.content').forEach(c => {
+                            c.style.maxHeight = null;
+                            c.parentElement.classList.remove('active');
+                        });
+
+                        if (!isOpen) {
+                            content.style.maxHeight = content.scrollHeight + "px";
+                            parent.classList.add('active');
+                        }
+                    });
+                });
+
+                // Smart Theme Management
+                const themeBtns = document.querySelectorAll('.theme-btn');
+                const root = document.documentElement;
+
+                const savedTheme = localStorage.getItem('ai-news-pref') || 'dark';
+                applyTheme(savedTheme);
+
+                themeBtns.forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        const mode = btn.getAttribute('data-mode');
+                        applyTheme(mode);
+                    });
+                });
+
+                function applyTheme(mode) {
+                    root.setAttribute('data-theme', mode);
+                    localStorage.setItem('ai-news-pref', mode);
+                    themeBtns.forEach(b => {
+                        b.classList.toggle('active-theme', b.getAttribute('data-mode') === mode);
+                    });
+                }
+            </script>
+        </body>
+        </html>
+        
