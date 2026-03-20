@@ -1,0 +1,27 @@
+# Python cache
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+
+# Virtual environment
+venv/
+env/
+.venv/
+
+# Environment variables
+.env
+.env.*
+
+# VS Code
+.vscode/
+
+# Data / generated output
+data/newsreports/
+
+# Git internals
+*.orig
+
+# OS files
+.DS_Store
+Thumbs.db
