@@ -37,6 +37,11 @@ jobs:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
         run: python -m agents.orchestrator_agent
 
+      - name: Create index.html redirect to latest report
+        run: |
+          FILENAME=$(ls newsreports/*.html | sort | tail -1 | xargs basename)
+          echo "<meta http-equiv='refresh' content='0; url=$FILENAME'>" > newsreports/index.html
+
       - name: Deploy report to GitHub Pages
         uses: peaceiris/actions-gh-pages@v4
         with:
