@@ -1,9 +1,9 @@
+import time
 import trafilatura
 from utils.llm_client import get_llm_summary
 
 class AnalystAgent:
     def __init__(self):
-        # The agent relies on the llm_client for processing
         pass
 
     def process_top_articles(self, articles):
@@ -19,7 +19,6 @@ class AnalystAgent:
             print(f"  -> Synthesizing: {art['title'][:50]}...")
             
             # 1. High-Precision Extraction
-            # We fetch the full page content to give the LLM maximum context
             downloaded = trafilatura.fetch_url(art['link'])
             full_text = trafilatura.extract(downloaded, include_comments=False)
             
@@ -27,11 +26,9 @@ class AnalystAgent:
             context_material = full_text if (full_text and len(full_text) > 400) else art.get('summary', '')
 
             # 2. Synthesis Phase
-            # We use the prompt structure we discussed for 5-10 line paragraphs
             narrative = self._generate_narrative(context_material)
             
             # 3. Data Packaging
-            # We maintain the metadata so the Display Agent has everything it needs
             final_reports.append({
                 'title': art['title'],
                 'source': art['source'],
@@ -39,6 +36,9 @@ class AnalystAgent:
                 'summary': narrative,
                 'priority_score': art['priority_score']
             })
+
+            # 4. Rate limit guard — keeps us within Gemini free tier (15 req/min)
+            time.sleep(6)
 
         return final_reports
 
@@ -61,6 +61,6 @@ class AnalystAgent:
         4. UNIVERSAL COVERAGE: Summarize the core driver (Technical, Financial, or Regulatory).
 
         ARTICLE CONTENT:
-        {text[:7000]} # Gemini's large window handles this easily
+        {text[:7000]}
         """
         return get_llm_summary(prompt)

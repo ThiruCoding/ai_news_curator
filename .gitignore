@@ -25,3 +25,5 @@ data/newsreports/
 # OS files
 .DS_Store
 Thumbs.db
+
+newsreports/

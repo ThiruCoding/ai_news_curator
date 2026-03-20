@@ -1,21 +1,30 @@
-import ollama
+import os
+import time
+from google import genai
+from dotenv import load_dotenv
 
-def get_llm_summary(prompt):
+load_dotenv()
+
+client = genai.Client(api_key=os.getenv("GEMINI_API_KEY"))
+
+def get_llm_summary(prompt, retries=3, wait=10):
     """
-    Executes local inference using Ollama.
-    Optimized for Llama 3.2 1B to ensure speed on 8GB RAM/CPU.
+    Executes inference using Google Gemini API.
+    Uses gemma-3-12b-it for free-tier summarization.
+    Retries up to 3 times on transient errors before returning empty string.
     """
-    try:
-        # We use the 1B model for faster CPU processing
-        response = ollama.chat(
-            model='llama3.2:1b',
-            messages=[{'role': 'user', 'content': prompt}],
-            options={
-                'temperature': 0,      # Keeps it factual (no hallucination)
-                'num_ctx': 4096,       # Limits context to prevent RAM overflow
-                'num_thread': 4        # Optimized for standard CPU core counts
-            }
-        )
-        return response['message']['content'].strip()
-    except Exception as e:
-        return f"[OLLAMA ERROR] Ensure the Ollama app is running: {str(e)}"
+    for attempt in range(retries):
+        try:
+            response = client.models.generate_content(
+                model="gemma-3-12b-it",
+                contents=prompt
+            )
+            return response.text.strip()
+        except Exception as e:
+            error_str = str(e)
+            if attempt < retries - 1:
+                print(f"  [RETRY {attempt + 1}/{retries}] Model unavailable, retrying in {wait}s...")
+                time.sleep(wait)
+            else:
+                print(f"  [FAILED] All retries exhausted: {error_str[:80]}")
+                return ""

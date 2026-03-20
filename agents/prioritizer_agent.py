@@ -23,22 +23,29 @@ class Prioritizer:
         # Step 2: Global Sort by Priority
         sorted_pool = sorted(articles, key=lambda x: x['priority_score'], reverse=True)
 
-        # Step 3: Deduplication (Maximal Marginal Relevance)
-        # We ensure the Top 10 are unique from one another
+        # Step 3: Deduplication + Source Diversity Cap
+        # We ensure the Top 10 are unique and no single source dominates
         final_selection = []
+        source_counts = {}
+
         for candidate in sorted_pool:
             if len(final_selection) >= limit:
                 break
-            
+
+            # Diversity cap — max 2 articles per source
+            source = candidate['source']
+            if source_counts.get(source, 0) >= 2:
+                continue
+
+            # Deduplication — skip if title is too similar to an already selected article
             is_redundant = False
             for selected in final_selection:
-                # If titles are > 80% similar, consider them the same news story
-                # Note: This is a placeholder for a true embedding comparison
-                if candidate['title'][:30] == selected['title'][:30]: 
+                if candidate['title'][:30] == selected['title'][:30]:
                     is_redundant = True
                     break
-            
+
             if not is_redundant:
                 final_selection.append(candidate)
+                source_counts[source] = source_counts.get(source, 0) + 1
 
         return final_selection

@@ -10,7 +10,7 @@ from agents.display_agent import DisplayAgent
 class Orchestrator:
     def __init__(self):
         # Initialize the Agent Team
-        self.curator = NewsCurator(config.USER_INTEREST, config.NEGATIVE_FILTER)
+        self.curator = NewsCurator(config.USER_INTEREST, config.USER_INTEREST_BUSINESS, config.NEGATIVE_FILTER)
         self.prioritizer = Prioritizer()
         self.analyst = AnalystAgent()
         self.display_agent = DisplayAgent()
@@ -24,16 +24,25 @@ class Orchestrator:
 
         # Phase 1: Ingestion & Curator Agent (Semantic Filter)
         for name, url in config.RSS_FEEDS.items():
-            print(f"[FETCHING] Accessing {name}...")
             status, raw_news = fetch_rss_feed(url)
-            if not raw_news: continue
+            fetched = len(raw_news) if raw_news else 0
+            if not raw_news:
+                print(f"[FETCHING] {name}: 0 articles fetched")
+                continue
 
             refined_batch = self.curator.filter_articles(raw_news, source_name=name)
+            print(f"[FETCHING] {name}: {fetched} fetched → {len(refined_batch)} passed curation")
             all_curated_articles.extend(refined_batch)
 
         # Phase 2: Prioritizer Agent (Ranking)
         # We condense the volume to the Top 10 to save Local CPU/Gemini Quota
         top_10 = self.prioritizer.get_top_priority(all_curated_articles, limit=10)
+
+        # TEMPORARY DEBUG — remove before final run
+        print("\n[DEBUG] Top 10 articles selected for synthesis:")
+        for i, art in enumerate(top_10, 1):
+            print(f"  {i}. [{art['source']}] {art['title'][:60]} (score: {art['priority_score']})")
+        
 
         if not top_10:
             print("\n[!] No relevant technical signals found in this cycle.")
