@@ -12,6 +12,8 @@ RSS_FEEDS = {
     "VENTUREBEAT_AI": "https://venturebeat.com/category/ai/feed/",
     "ZDNET_AI": "https://www.zdnet.com/topic/artificial-intelligence/rss.xml",
     #"COMPUTER_WEEKLY_AI": "https://www.computerweekly.com/rss/Schooled-in-AI-Podcast-Feed.xml",
+    "THE_DECODER": "https://the-decoder.com/feed/",
+    "SCMP_TECH": "https://www.scmp.com/rss/36/feed",
 
     # AI Business & Industry News
     "GUARDIAN_AI": "https://www.theguardian.com/technology/artificialintelligenceai/rss",
@@ -58,6 +60,7 @@ SOURCE_WEIGHTS = {
     "MARKTECHPOST": 1.2,
     "IEEE_SPECTRUM_AI": 1.4,
     "ARS_TECHNICA": 1.4,
+    "THE_DECODER": 1.4,
     "AXIOS_AI": 1.2,
 
     # --- LEVEL 3: SPECIALIZED INDUSTRY & STARTUP NEWS (Tier B: 1.2) ---
@@ -70,6 +73,7 @@ SOURCE_WEIGHTS = {
     "GUARDIAN_AI": 1.2,
     "404_MEDIA": 1.2,
     "SEMAFOR_TECH": 1.2,
+    "SCMP_TECH": 1.2,
 
     # --- LEVEL 4: GENERAL TECH & MACRO CONTEXT (Tier C: 1.0) ---
     "NYT_TECH": 1.2,

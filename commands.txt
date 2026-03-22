@@ -1,0 +1,4 @@
+git add .
+git commit -m "ui: remove dispatch meta and read time from article items"
+git push origin master
+
