@@ -53,9 +53,9 @@ SOURCE_WEIGHTS = {
 
     # --- LEVEL 2: ENGINEERING AGGREGATORS & BREAKING NEWS (Tier A: 1.4) ---
     "HACKER_NEWS": 1.4,
-    "INFOQ_AI_ML": 1.4,
+    "INFOQ_AI_ML": 1.2,
     "MIT_AI_NEWS": 1.4,
-    "MARKTECHPOST": 1.4,
+    "MARKTECHPOST": 1.2,
     "IEEE_SPECTRUM_AI": 1.4,
     "ARS_TECHNICA": 1.4,
     "AXIOS_AI": 1.2,
@@ -72,7 +72,7 @@ SOURCE_WEIGHTS = {
     "SEMAFOR_TECH": 1.2,
 
     # --- LEVEL 4: GENERAL TECH & MACRO CONTEXT (Tier C: 1.0) ---
-    "NYT_TECH": 1.0,
+    "NYT_TECH": 1.2,
     "WSJ_TECH": 1.0,
     "ZDNET_AI": 1.0,
     "COMPUTER_WEEKLY_AI": 1.0,

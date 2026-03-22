@@ -429,18 +429,14 @@ class DisplayAgent:
 
         # ── 2. Dynamic Content Injection ─────────────────────────────────────
         for i, art in enumerate(articles, 1):
-            domain    = self._get_domain(art['link'])
-            read_time = self._estimate_read_time(art.get('summary', ''))
-            source    = art.get('source', domain).replace('_', ' ').title()
-            ordinal   = f"Dispatch {i:02d}"
+            domain = self._get_domain(art['link'])
 
             html_template += f"""
       <div class="article-item">
         <button class="article-header" aria-expanded="false">
           <div>
-            <p class="dispatch-meta">{ordinal} · {source}</p>
             <p class="hed">{art['title']}</p>
-            <p class="source-line">{domain} · {read_time}</p>
+            <p class="source-line">{domain}</p>
           </div>
           <div class="toggle-icon" aria-hidden="true">
             <svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke-width="1.5" stroke-linecap="round">
