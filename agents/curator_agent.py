@@ -46,3 +46,32 @@ class NewsCurator:
                 curated_list.append(curated_item)
 
         return curated_list
+
+    def score_articles(self, articles, source_name, threshold=0.22):
+        """
+        Scores all articles against the three vectors and returns the full
+        list with scores attached — regardless of whether they passed or failed.
+        Used by the Orchestrator to collect rejected articles for the insights page.
+        """
+        scored_list = []
+        for article in articles:
+            article_vector = get_embeddings([article['title']])[0]
+
+            tech_score = calculate_similarity(self.interest_vector, article_vector)
+            biz_score  = calculate_similarity(self.business_vector, article_vector)
+            neg_score  = calculate_similarity(self.negative_vector, article_vector)
+
+            relevance_score = round(max(tech_score, biz_score), 4)
+
+            scored_list.append({
+                'title':           article['title'],
+                'link':            article['link'],
+                'summary':         article.get('summary', ''),
+                'source':          source_name,
+                'relevance_score': relevance_score,
+                'noise_score':     round(neg_score, 4),
+                'priority_rank':   0,
+                'priority_score':  0.0,
+            })
+
+        return scored_list

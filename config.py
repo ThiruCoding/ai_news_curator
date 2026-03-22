@@ -1,5 +1,11 @@
 # Centralized Configuration for AI News Curator
 
+# ── Dev Mode ──────────────────────────────────────────────────────────────────
+# Set True to skip all fetching, embedding, and Gemini calls.
+# Uses mock data from utils/mock_data.py for instant display testing.
+# Always set False before committing for production runs.
+DEV_MODE = False
+
 # RSS Feed Registry
 RSS_FEEDS = {
     # Journalism & Industry Analysis
