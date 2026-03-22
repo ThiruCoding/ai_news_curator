@@ -8,7 +8,6 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,400;1,700&family=Source+Serif+4:ital,opsz,wght@0,8..60,300;0,8..60,400;1,8..60,300;1,8..60,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
   <style>
-    /* ── Token System ── */
     :root {
       --ink:        #1a1410;
       --ink-mid:    #3d3530;
@@ -20,8 +19,6 @@
       --rule-heavy: #8c7e6e;
       --accent:     #8b1a1a;
     }
-
-    /* ── Dark Mode (system preference) ── */
     @media (prefers-color-scheme: dark) {
       :root {
         --ink:        #f0ece4;
@@ -35,8 +32,6 @@
         --accent:     #c9544e;
       }
     }
-
-    /* ── Manual toggle overrides ── */
     html[data-theme="light"] {
       --ink:        #1a1410;
       --ink-mid:    #3d3530;
@@ -59,11 +54,8 @@
       --rule-heavy: #4a4038;
       --accent:     #c9544e;
     }
-
-    /* ── Reset ── */
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     html { scroll-behavior: smooth; }
-
     body {
       font-family: 'Source Serif 4', Georgia, 'Times New Roman', serif;
       background: var(--paper);
@@ -72,15 +64,11 @@
       -webkit-font-smoothing: antialiased;
       -moz-osx-font-smoothing: grayscale;
     }
-
-    /* ── Layout ── */
     .page {
       max-width: 680px;
       margin: 0 auto;
       padding: 2.5rem 1.5rem 6rem;
     }
-
-    /* ── Sun/Moon Sliding Toggle ── */
     .theme-toggle {
       position: fixed;
       top: 1.2rem;
@@ -110,27 +98,31 @@
       justify-content: center;
       transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), background 0.3s;
     }
-    html[data-theme="dark"] .toggle-knob {
-      transform: translateX(24px);
-    }
+    html[data-theme="dark"] .toggle-knob { transform: translateX(24px); }
     .icon-sun, .icon-moon {
       position: absolute;
       width: 12px;
       height: 12px;
       transition: opacity 0.25s;
     }
-    /* Sun visible in dark mode (click to go light), moon visible in light mode */
     html[data-theme="light"] .icon-sun  { opacity: 0; }
     html[data-theme="light"] .icon-moon { opacity: 1; }
     html[data-theme="dark"]  .icon-sun  { opacity: 1; }
     html[data-theme="dark"]  .icon-moon { opacity: 0; }
-
-    /* ── Nameplate ── */
     .nameplate {
       text-align: center;
       padding: 1.8rem 0 1.2rem;
       border-bottom: 3px double var(--rule-heavy);
     }
+    /* Easter egg — looks like plain text, behaves like a link */
+    .nameplate-link {
+      display: inline;
+      color: inherit;
+      text-decoration: none;
+      cursor: pointer;
+    }
+    .nameplate-link:hover,
+    .nameplate-link:focus { color: inherit; text-decoration: none; outline: none; }
     .nameplate-title {
       font-family: 'Playfair Display', Georgia, serif;
       font-size: clamp(2.4rem, 6vw, 3.2rem);
@@ -151,8 +143,6 @@
       color: var(--ink-light);
       letter-spacing: 0.04em;
     }
-
-    /* ── Dateline bar ── */
     .dateline {
       display: flex;
       justify-content: space-between;
@@ -168,8 +158,6 @@
       color: var(--ink-faint);
     }
     .dateline .center { color: var(--rule-heavy); }
-
-    /* ── Section Flag ── */
     .section-flag {
       display: inline-block;
       font-family: 'IBM Plex Mono', monospace;
@@ -182,13 +170,9 @@
       padding: 3px 9px 4px;
       margin: 1.8rem 0 0;
     }
-
-    /* ── Article List ── */
     .articles { margin-top: 0; }
     .article-item { border-bottom: 1px solid var(--rule); }
     .article-item:first-of-type { border-top: 1px solid var(--rule); }
-
-    /* ── Article Header Button ── */
     .article-header {
       width: 100%;
       background: none;
@@ -202,20 +186,8 @@
       align-items: start;
       color: var(--ink);
     }
-    .article-header:focus-visible {
-      outline: 2px solid var(--accent);
-      outline-offset: 2px;
-    }
+    .article-header:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
     .article-header:hover .hed { color: var(--accent); }
-
-    .dispatch-meta {
-      font-family: 'IBM Plex Mono', monospace;
-      font-size: 8.5px;
-      letter-spacing: 0.18em;
-      text-transform: uppercase;
-      color: var(--ink-faint);
-      margin-bottom: 0.4rem;
-    }
     .hed {
       font-family: 'Playfair Display', Georgia, serif;
       font-size: 1.15rem;
@@ -232,8 +204,6 @@
       color: var(--ink-faint);
       margin-top: 0.4rem;
     }
-
-    /* ── Article expand Plus/Cross icon ── */
     .toggle-icon {
       width: 22px;
       height: 22px;
@@ -250,16 +220,8 @@
       stroke: var(--ink-light);
       transition: transform 0.32s cubic-bezier(0.4, 0, 0.2, 1), stroke 0.2s;
     }
-    .article-item.open .toggle-icon {
-      background: var(--ink);
-      border-color: var(--ink);
-    }
-    .article-item.open .toggle-icon svg {
-      stroke: var(--paper);
-      transform: rotate(45deg);
-    }
-
-    /* ── Expandable Body ── */
+    .article-item.open .toggle-icon { background: var(--ink); border-color: var(--ink); }
+    .article-item.open .toggle-icon svg { stroke: var(--paper); transform: rotate(45deg); }
     .article-body {
       max-height: 0;
       overflow: hidden;
@@ -271,10 +233,7 @@
       gap: 0 1.2rem;
       padding-bottom: 1.8rem;
     }
-    .body-accent-rule {
-      background: var(--accent);
-      border-radius: 1px;
-    }
+    .body-accent-rule { background: var(--accent); border-radius: 1px; }
     .summary {
       font-family: 'Source Serif 4', Georgia, serif;
       font-size: 1rem;
@@ -299,8 +258,6 @@
       transition: opacity 0.15s;
     }
     .read-more:hover { opacity: 0.65; }
-
-    /* ── Footer ── */
     .report-footer {
       margin-top: 3.5rem;
       padding-top: 1rem;
@@ -326,8 +283,6 @@
       letter-spacing: 0;
       text-transform: none;
     }
-
-    /* ── Responsive ── */
     @media (max-width: 520px) {
       .page { padding: 1.5rem 1rem 4rem; }
       .nameplate-title { font-size: 2.2rem; }
@@ -337,11 +292,9 @@
 </head>
 <body>
 
-  <!-- Sun/Moon sliding theme toggle -->
   <div class="theme-toggle" id="theme-toggle" role="button" aria-label="Toggle theme" tabindex="0">
     <div class="toggle-track">
       <div class="toggle-knob">
-        <!-- Sun icon (shown in dark mode) -->
         <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="var(--paper)" stroke-width="2.5" stroke-linecap="round">
           <circle cx="12" cy="12" r="4"/>
           <line x1="12" y1="2"  x2="12" y2="5"/>
@@ -353,7 +306,6 @@
           <line x1="4.22"  y1="19.78" x2="6.34"  y2="17.66"/>
           <line x1="17.66" y1="6.34"  x2="19.78" y2="4.22"/>
         </svg>
-        <!-- Moon icon (shown in light mode) -->
         <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="var(--paper)" stroke-width="2.5" stroke-linecap="round">
           <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
         </svg>
@@ -363,18 +315,18 @@
 
   <div class="page">
 
-    <!-- Nameplate — no kicker -->
     <header class="nameplate">
-      <h1 class="nameplate-title">The Inference</h1>
+      <h1 class="nameplate-title">
+        <a class="nameplate-link" href="AI_News_Insights_22MAR2026.html" target="_blank" rel="noopener noreferrer">The Inference</a>
+      </h1>
       <div class="nameplate-rule"></div>
       <p class="nameplate-tagline">A curated daily briefing on artificial intelligence</p>
     </header>
 
-    <!-- Dateline -->
     <div class="dateline">
       <span>SUNDAY, 22 MARCH 2026</span>
-      <span class="center">· Synthesised at 4:24 AM EDT ·</span>
-      <span>Curated from 15 sources</span>
+      <span class="center">· Synthesised at 3:29 PM EDT ·</span>
+      <span>Curated from 17 sources</span>
     </div>
 
     <span class="section-flag">Top Stories</span>
@@ -398,7 +350,7 @@
           <div class="article-body-inner">
             <div class="body-accent-rule"></div>
             <div>
-              <p class="summary">Driven by increasing demand for AI integration guidance, Anthropic is exploring a joint AI consulting venture with private equity firms like Blackstone, reflecting a broader trend of companies seeking external expertise. This highlights a debate within the AI industry regarding responsibility for AI adoption – whether AI firms should proactively identify use cases or leave it to end-users, as emphasized by Anthropic's perspective and contrasted with the "consumer doesn't know what they want" philosophy. Ultimately, successful AI implementation hinges on user education and investment, requiring significant time and learning to maximize value. The shift underscores a necessary behavior change for employees to effectively leverage AI tools.</p>
+              <p class="summary">Driven by increasing demand for AI integration guidance, Anthropic is exploring a joint AI consulting venture with private equity firms like Blackstone, reflecting a broader trend of companies seeking external expertise. This highlights a debate within the AI industry regarding responsibility for AI adoption – whether AI firms should proactively identify use cases or leave it to end-users, with experts noting successful AI implementation hinges on user education and behavioral change. The discussion parallels historical debates about innovation, contrasting Anthropic's approach with the "consumer doesn't know what they want" philosophy championed by figures like Steve Jobs. Ultimately, maximizing AI value requires significant user investment and learning.</p>
               <a href="https://www.semafor.com/article/03/13/2026/tech-firms-are-diverging-on-how-to-integrate-ai" class="read-more" target="_blank" rel="noopener noreferrer">
                 Continue reading at semafor.com →
               </a>
@@ -424,9 +376,61 @@
           <div class="article-body-inner">
             <div class="body-accent-rule"></div>
             <div>
-              <p class="summary">AI CEOs like Sam Altman, Alex Karp, and Dario Amodei are generating concern by highlighting the potentially disruptive and even dangerous aspects of their technology, a strategy that effectively secures funding and appeals to business clients focused on national security. However, this messaging is contributing to a decline in public trust, with only 26% of American voters viewing AI positively—a figure lower than that of ICE—and fueling anxieties about potential AI bans. While some executives genuinely express concern about societal impact, the prevailing narrative risks alienating the broader public and potentially prompting stricter AI regulation, particularly as the U.S. lags behind other nations like China in public AI acceptance.</p>
+              <p class="summary">AI CEOs like Sam Altman, Alex Karp, and Dario Amodei are generating concern by highlighting the potentially disruptive and even dangerous aspects of their technology, a strategy that effectively attracts investors and business clients by framing AI as immensely powerful and vital for national security. However, this messaging is backfiring with the broader public, as evidenced by a recent NBC News poll showing only 26% of voters view AI positively—a figure lower than even ICE—and fueling anxieties about potential AI bans. This growing fear, largely a U.S. phenomenon, contrasts with more optimistic views in developing countries like China, potentially widening an innovation gap as highlighted by Nvidia CEO Jensen Huang.</p>
               <a href="https://www.axios.com/2026/03/16/ai-sam-altman-fear-mongering" class="read-more" target="_blank" rel="noopener noreferrer">
                 Continue reading at axios.com →
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="article-item">
+        <button class="article-header" aria-expanded="false">
+          <div>
+            <p class="hed">Andrej Karpathy says humans are now the bottleneck in AI research with easy-to-measure results</p>
+            <p class="source-line">the-decoder.com</p>
+          </div>
+          <div class="toggle-icon" aria-hidden="true">
+            <svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke-width="1.5" stroke-linecap="round">
+              <line x1="5" y1="1" x2="5" y2="9"/>
+              <line x1="1" y1="5" x2="9" y2="5"/>
+            </svg>
+          </div>
+        </button>
+        <div class="article-body" role="region">
+          <div class="article-body-inner">
+            <div class="body-accent-rule"></div>
+            <div>
+              <p class="summary">Andrej Karpathy, formerly of Tesla, argues that human researchers have become the primary bottleneck in AI development, particularly in areas with easily quantifiable results. His experiment using an autonomous agent to optimize a GPT-2 training setup revealed improvements missed by manual tuning, highlighting the limitations of human intuition. Karpathy advocates for researchers to relinquish direct control and automate their roles to maximize the potential of current AI tools, though he cautions that these advancements may not readily translate to less measurable, more subjective domains. This shift reflects a systematic automation of the research process itself, aligning with the stated goals of major AI labs.</p>
+              <a href="https://the-decoder.com/andrej-karpathy-says-humans-are-now-the-bottleneck-in-ai-research-with-easy-to-measure-results/" class="read-more" target="_blank" rel="noopener noreferrer">
+                Continue reading at the-decoder.com →
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="article-item">
+        <button class="article-header" aria-expanded="false">
+          <div>
+            <p class="hed">OpenAI's chief scientist trusts AI with experiments but says it's not at the level to design complex systems</p>
+            <p class="source-line">the-decoder.com</p>
+          </div>
+          <div class="toggle-icon" aria-hidden="true">
+            <svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke-width="1.5" stroke-linecap="round">
+              <line x1="5" y1="1" x2="5" y2="9"/>
+              <line x1="1" y1="5" x2="9" y2="5"/>
+            </svg>
+          </div>
+        </button>
+        <div class="article-body" role="region">
+          <div class="article-body-inner">
+            <div class="body-accent-rule"></div>
+            <div>
+              <p class="summary">OpenAI's Chief Scientist, Jakub Pachocki, acknowledges the significant advancements of AI models like Codex, enabling him to complete experiments in days that previously took weeks, yet he maintains that current AI isn't ready for complex system design.  The company is actively developing an "AI Researcher" – a multi-agent system slated for release by March 2028 – intended to autonomously tackle research challenges across diverse fields, ultimately aiming to replicate entire research labs within data centers. Pachocki envisions this shift potentially automating corporate functions, leading to a concentration of power previously unseen. While optimistic about AI's problem-solving capabilities, he emphasizes the continued need for human oversight and goal setting.</p>
+              <a href="https://the-decoder.com/openais-chief-scientist-trusts-ai-with-experiments-but-says-its-not-at-the-level-to-design-complex-systems/" class="read-more" target="_blank" rel="noopener noreferrer">
+                Continue reading at the-decoder.com →
               </a>
             </div>
           </div>
@@ -450,7 +454,7 @@
           <div class="article-body-inner">
             <div class="body-accent-rule"></div>
             <div>
-              <p class="summary">The 2025 DORA report reveals that AI's impact on software delivery isn't automatic, instead acting as a multiplier of existing engineering strengths and weaknesses. While 90% of developers now utilize AI tools, leading to reported productivity gains in coding and debugging, success hinges on robust organizational systems—including mature DevOps practices, clear workflows, and strong platform capabilities—rather than solely on AI tool sophistication. Organizations lacking these foundational elements risk accelerating technical debt and instability, highlighting the critical need for a strategic AI adoption framework focused on data ecosystems, knowledge accessibility, and disciplined engineering practices to realize AI's full potential.</p>
+              <p class="summary">The 2025 DORA report reveals that AI's impact on software delivery isn't automatic, instead acting as a multiplier of existing engineering strengths and weaknesses. While 90% of developers now utilize AI tools, leading to reported productivity gains in coding and debugging, success hinges on robust organizational systems like mature DevOps practices, clear workflows, and strong platform capabilities. Organizations lacking these foundational elements risk accelerating technical debt and instability, highlighting the critical need for a strategic AI adoption policy, a healthy data ecosystem, accessible internal knowledge, and disciplined engineering practices to realize AI's full potential.</p>
               <a href="https://www.infoq.com/news/2026/03/ai-dora-report/?utm_campaign=infoq_content&utm_source=infoq&utm_medium=feed&utm_term=AI%2C+ML+%26+Data+Engineering-news" class="read-more" target="_blank" rel="noopener noreferrer">
                 Continue reading at infoq.com →
               </a>
@@ -476,7 +480,7 @@
           <div class="article-body-inner">
             <div class="body-accent-rule"></div>
             <div>
-              <p class="summary">Fueled by concerns over potential social unrest stemming from AI-driven white-collar job displacement, major tech and financial players like Nvidia, BlackRock, and Meta are pivoting to support blue-collar workers essential for building AI infrastructure. BlackRock CEO Larry Fink highlighted a "crisis" of skilled labor shortages, pledging $100 million to trade-work training and noting electricians now earn over $240,000. This shift acknowledges the risk of jobless growth and escalating intergenerational tensions, as AI concentrates wealth while simultaneously threatening recent graduates' employment prospects. The growing awareness reflects a proactive attempt to mitigate potential backlash and address the widening economic divide.</p>
+              <p class="summary">Fueled by concerns over potential social unrest stemming from AI-driven white-collar job displacement, major tech and financial players like Nvidia, BlackRock, and Meta are pivoting to support blue-collar workers essential for building AI infrastructure. BlackRock CEO Larry Fink highlighted a "crisis" of skilled labor shortages, pledging $100 million to trade-work training and noting electricians now earn over $240,000. This shift acknowledges the risk of jobless growth and escalating intergenerational tensions, as AI concentrates wealth while simultaneously threatening recent graduates' employment prospects. The move signals a proactive effort to mitigate backlash and address the widening economic divide.</p>
               <a href="https://www.semafor.com/article/03/12/2026/its-easier-to-see-the-knowledge-economy-jobs-ai-is-destroying-than-the-ones-it-will-create" class="read-more" target="_blank" rel="noopener noreferrer">
                 Continue reading at semafor.com →
               </a>
@@ -502,9 +506,35 @@
           <div class="article-body-inner">
             <div class="body-accent-rule"></div>
             <div>
-              <p class="summary">Fueled by massive AI investment—over half a trillion dollars in the last five years—data center power demands are surging, projected to increase 175% by 2030, yet current grid infrastructure and power generation are struggling to keep pace, leading to project delays and rising electricity prices. This supply-demand imbalance is creating significant investment opportunities in energy-related technologies, with major tech companies like Google and Meta already investing heavily in solar, wind, nuclear, and battery solutions like Form Energy's 100-hour battery. Startups developing advanced power conversion, grid management software, and solid-state transformers are also attracting capital, offering a potential hedge against future AI market fluctuations and capitalizing on the broader electrification trend.</p>
+              <p class="summary">Fueled by massive AI investment—over half a trillion dollars in the last five years—data center power demands are surging, projected to increase 175% by 2030, creating a significant supply-demand imbalance. Announced data center projects face widespread delays due to power access constraints, prompting major tech companies like Google and Meta to invest heavily in renewable energy sources and grid-scale batteries like Form Energy's. This energy crunch is driving investment opportunities in startups developing innovative power conversion technologies, grid management software, and next-generation transformers, offering a potential hedge against future AI market fluctuations and capitalizing on broader electrification trends.</p>
               <a href="https://techcrunch.com/2026/03/20/the-best-ai-investment-might-be-in-energy-tech/" class="read-more" target="_blank" rel="noopener noreferrer">
                 Continue reading at techcrunch.com →
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="article-item">
+        <button class="article-header" aria-expanded="false">
+          <div>
+            <p class="hed">AI was everywhere at gaming’s big developer conference — except the games</p>
+            <p class="source-line">theverge.com</p>
+          </div>
+          <div class="toggle-icon" aria-hidden="true">
+            <svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke-width="1.5" stroke-linecap="round">
+              <line x1="5" y1="1" x2="5" y2="9"/>
+              <line x1="1" y1="5" x2="9" y2="5"/>
+            </svg>
+          </div>
+        </button>
+        <div class="article-body" role="region">
+          <div class="article-body-inner">
+            <div class="body-accent-rule"></div>
+            <div>
+              <p class="summary">Despite widespread demonstrations of generative AI tools at the Game Developers Conference (GDC), a significant majority of developers, particularly indie studios, are actively rejecting its use in game creation. Concerns center around the perceived degradation of the "human element" in game development, with many believing AI-generated content lacks the artistic quality and emotional connection vital for engaging players. This resistance is reflected in a recent GDC survey indicating 52% view generative AI as negatively impacting the industry, alongside legal uncertainties surrounding copyright and the potential displacement of human talent.</p>
+              <a href="https://www.theverge.com/games/897982/gdc-2026-ai-game-developer-conference" class="read-more" target="_blank" rel="noopener noreferrer">
+                Continue reading at theverge.com →
               </a>
             </div>
           </div>
@@ -554,7 +584,7 @@
           <div class="article-body-inner">
             <div class="body-accent-rule"></div>
             <div>
-              <p class="summary">The Trump administration has released a framework of recommendations for Congress on AI policy, prioritizing a national standard and preempting state regulations to avoid a "fifty discordant ones." The proposals include addressing AI replicas, requiring tech companies to cover increased energy demands, establishing regulatory sandboxes, and bolstering children's online safety measures. However, the framework faces significant hurdles due to deep divisions within Congress and between state and federal authorities, with Democrats already introducing legislation to counter the administration's efforts to override state AI laws, signaling a protracted and complex legislative battle. Ultimately, the White House appears focused on establishing its position rather than enacting comprehensive legislation.</p>
+              <p class="summary">The Trump administration has released a framework of recommendations for Congress on AI policy, prioritizing a national standard to preempt potentially conflicting state regulations and addressing issues like AI replicas, energy demands of tech companies, and online child safety. Despite Republican control of Congress, passage of a comprehensive bill faces significant hurdles due to deep-seated disagreements on tech policy and friction over state versus federal authority. The framework also signals a reluctance to intervene in copyright disputes related to AI training data, deferring to judicial rulings, and has drawn immediate opposition from House Democrats seeking to reinstate state regulatory power.</p>
               <a href="https://www.axios.com/2026/03/20/white-house-ai-plan-trump-framework" class="read-more" target="_blank" rel="noopener noreferrer">
                 Continue reading at axios.com →
               </a>
@@ -563,107 +593,26 @@
         </div>
       </div>
 
-      <div class="article-item">
-        <button class="article-header" aria-expanded="false">
-          <div>
-            <p class="hed">Google Colab Now Has an Open-Source MCP (Model Context Protocol) Server: Use Colab Runtimes with GPUs from Any Local AI Agent</p>
-            <p class="source-line">marktechpost.com</p>
-          </div>
-          <div class="toggle-icon" aria-hidden="true">
-            <svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke-width="1.5" stroke-linecap="round">
-              <line x1="5" y1="1" x2="5" y2="9"/>
-              <line x1="1" y1="5" x2="9" y2="5"/>
-            </svg>
-          </div>
-        </button>
-        <div class="article-body" role="region">
-          <div class="article-body-inner">
-            <div class="body-accent-rule"></div>
-            <div>
-              <p class="summary">Google has released the Colab MCP Server, an implementation of the open-source Model Context Protocol (MCP) designed to break down silos in AI development by enabling AI agents to directly interact with the Google Colab environment. This technical advancement allows compatible AI clients like Anthropic’s Claude Code and Gemini CLI to treat Colab notebooks as remote runtimes, facilitating programmatic code creation, modification, and execution within the cloud-hosted Jupyter notebooks. The Colab MCP Server acts as a bridge, handling API interactions and dependency management while leveraging Google’s compute infrastructure for execution and persistent state, ultimately streamlining AI workflows and iterative debugging. Developers can access the server and related tools through a dedicated GitHub repository.</p>
-              <a href="https://www.marktechpost.com/2026/03/19/google-colab-now-has-an-open-source-mcp-model-context-protocol-server-use-colab-runtimes-with-gpus-from-any-local-ai-agent/" class="read-more" target="_blank" rel="noopener noreferrer">
-                Continue reading at marktechpost.com →
-              </a>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="article-item">
-        <button class="article-header" aria-expanded="false">
-          <div>
-            <p class="hed">Multiverse Computing pushes its compressed AI models into the mainstream</p>
-            <p class="source-line">techcrunch.com</p>
-          </div>
-          <div class="toggle-icon" aria-hidden="true">
-            <svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke-width="1.5" stroke-linecap="round">
-              <line x1="5" y1="1" x2="5" y2="9"/>
-              <line x1="1" y1="5" x2="9" y2="5"/>
-            </svg>
-          </div>
-        </button>
-        <div class="article-body" role="region">
-          <div class="article-body-inner">
-            <div class="body-accent-rule"></div>
-            <div>
-              <p class="summary">Amidst growing financial instability in the AI supply chain, highlighted by rising private company defaults, Spanish startup Multiverse Computing is capitalizing on the demand for AI efficiency by offering compressed AI models that can run locally on devices. Their CompactifAI app and new API portal provide access to these models, including a version derived from OpenAI's gpt-oss-120b, demonstrating faster responses and lower costs compared to larger language models. While the app currently has limited consumer adoption, Multiverse is targeting businesses with real-time usage monitoring and the potential for increased privacy and resilience in applications like drones and satellites, fueling rumors of a significant €500 million funding round.</p>
-              <a href="https://techcrunch.com/2026/03/19/multiverse-computing-pushes-its-compressed-ai-models-into-the-mainstream/" class="read-more" target="_blank" rel="noopener noreferrer">
-                Continue reading at techcrunch.com →
-              </a>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="article-item">
-        <button class="article-header" aria-expanded="false">
-          <div>
-            <p class="hed">Tinybox – A powerful computer for deep learning</p>
-            <p class="source-line">tinygrad.org</p>
-          </div>
-          <div class="toggle-icon" aria-hidden="true">
-            <svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke-width="1.5" stroke-linecap="round">
-              <line x1="5" y1="1" x2="5" y2="9"/>
-              <line x1="1" y1="5" x2="9" y2="5"/>
-            </svg>
-          </div>
-        </button>
-        <div class="article-body" role="region">
-          <div class="article-body-inner">
-            <div class="body-accent-rule"></div>
-            <div>
-              <p class="summary">Tiny Corp is experiencing rapid growth driven by its neural network framework, tinygrad, and the launch of its high-performance computing hardware, the tinybox. Recently funded, the company is actively hiring software engineers, operations personnel, and hardware specialists, prioritizing candidates who have contributed to the tinygrad project. The tinybox, available in red, green, and upcoming exa configurations, offers exceptional performance-per-dollar, demonstrated by its MLPerf Training 4.0 benchmark results, and aims to commoditize petaflop-scale computing to democratize AI access.</p>
-              <a href="https://tinygrad.org/#tinybox" class="read-more" target="_blank" rel="noopener noreferrer">
-                Continue reading at tinygrad.org →
-              </a>
-            </div>
-          </div>
-        </div>
-      </div>
-
-    </div><!-- /articles -->
+    </div>
 
     <footer class="report-footer">
       <span class="footer-brand">An agentic pipeline experiment by ThiruCoding</span>
       <span>All rights reserved · 2026</span>
     </footer>
 
-  </div><!-- /page -->
+  </div>
 
   <script>
-    // ── Exclusive accordion ──────────────────────────────────────────────
     document.querySelectorAll('.article-header').forEach(btn => {
       btn.addEventListener('click', () => {
         const item   = btn.closest('.article-item');
         const body   = item.querySelector('.article-body');
         const isOpen = item.classList.contains('open');
-
         document.querySelectorAll('.article-item.open').forEach(el => {
           el.classList.remove('open');
           el.querySelector('.article-body').style.maxHeight = null;
           el.querySelector('.article-header').setAttribute('aria-expanded', 'false');
         });
-
         if (!isOpen) {
           item.classList.add('open');
           body.style.maxHeight = body.scrollHeight + 'px';
@@ -672,32 +621,22 @@
       });
     });
 
-    // ── Sun/Moon sliding theme toggle ────────────────────────────────────
-    const root    = document.documentElement;
-    const toggle  = document.getElementById('theme-toggle');
-
+    const root   = document.documentElement;
+    const toggle = document.getElementById('theme-toggle');
     function applyTheme(mode) {
       root.setAttribute('data-theme', mode);
       try { localStorage.setItem('the-inference-theme', mode); } catch(e) {}
     }
-
-    // Init: stored → system → light
     const stored = (() => { try { return localStorage.getItem('the-inference-theme'); } catch(e) { return null; } })();
     const system = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
     applyTheme(stored || system);
-
     toggle.addEventListener('click', () => {
       const current = root.getAttribute('data-theme') || 'light';
       applyTheme(current === 'light' ? 'dark' : 'light');
     });
-
     toggle.addEventListener('keydown', e => {
-      if (e.key === 'Enter' || e.key === ' ') {
-        e.preventDefault();
-        toggle.click();
-      }
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggle.click(); }
     });
-
     window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
       const saved = (() => { try { return localStorage.getItem('the-inference-theme'); } catch(e) { return null; } })();
       if (!saved) applyTheme(e.matches ? 'dark' : 'light');
