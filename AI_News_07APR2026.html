@@ -1,0 +1,647 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>The Inference — TUESDAY, 7 APRIL 2026</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,400;1,700&family=Source+Serif+4:ital,opsz,wght@0,8..60,300;0,8..60,400;1,8..60,300;1,8..60,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --ink:        #1a1410;
+      --ink-mid:    #3d3530;
+      --ink-light:  #6b625a;
+      --ink-faint:  #a09890;
+      --paper:      #f7f4ee;
+      --paper-warm: #ede9e0;
+      --rule:       #c8bfb0;
+      --rule-heavy: #8c7e6e;
+      --accent:     #8b1a1a;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --ink:        #f0ece4;
+        --ink-mid:    #cdc5bb;
+        --ink-light:  #9d9288;
+        --ink-faint:  #6b625a;
+        --paper:      #16120e;
+        --paper-warm: #1e1a15;
+        --rule:       #2e2820;
+        --rule-heavy: #4a4038;
+        --accent:     #c9544e;
+      }
+    }
+    html[data-theme="light"] {
+      --ink:        #1a1410;
+      --ink-mid:    #3d3530;
+      --ink-light:  #6b625a;
+      --ink-faint:  #a09890;
+      --paper:      #f7f4ee;
+      --paper-warm: #ede9e0;
+      --rule:       #c8bfb0;
+      --rule-heavy: #8c7e6e;
+      --accent:     #8b1a1a;
+    }
+    html[data-theme="dark"] {
+      --ink:        #f0ece4;
+      --ink-mid:    #cdc5bb;
+      --ink-light:  #9d9288;
+      --ink-faint:  #6b625a;
+      --paper:      #16120e;
+      --paper-warm: #1e1a15;
+      --rule:       #2e2820;
+      --rule-heavy: #4a4038;
+      --accent:     #c9544e;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Source Serif 4', Georgia, 'Times New Roman', serif;
+      background: var(--paper);
+      color: var(--ink);
+      transition: background 0.35s, color 0.35s;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+    .page {
+      max-width: 680px;
+      margin: 0 auto;
+      padding: 2.5rem 1.5rem 6rem;
+    }
+    .theme-toggle {
+      position: fixed;
+      top: 1.2rem;
+      right: 1.2rem;
+      z-index: 99;
+    }
+    .toggle-track {
+      width: 52px;
+      height: 28px;
+      background: var(--paper-warm);
+      border: 1px solid var(--rule);
+      border-radius: 14px;
+      position: relative;
+      cursor: pointer;
+      transition: background 0.3s, border-color 0.3s;
+    }
+    .toggle-knob {
+      position: absolute;
+      top: 3px;
+      left: 3px;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: var(--ink);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), background 0.3s;
+    }
+    html[data-theme="dark"] .toggle-knob { transform: translateX(24px); }
+    .icon-sun, .icon-moon {
+      position: absolute;
+      width: 12px;
+      height: 12px;
+      transition: opacity 0.25s;
+    }
+    html[data-theme="light"] .icon-sun  { opacity: 0; }
+    html[data-theme="light"] .icon-moon { opacity: 1; }
+    html[data-theme="dark"]  .icon-sun  { opacity: 1; }
+    html[data-theme="dark"]  .icon-moon { opacity: 0; }
+    .nameplate {
+      text-align: center;
+      padding: 1.8rem 0 1.2rem;
+      border-bottom: 3px double var(--rule-heavy);
+    }
+    /* Easter egg — looks like plain text, behaves like a link */
+    .nameplate-link {
+      display: inline;
+      color: inherit;
+      text-decoration: none;
+      cursor: pointer;
+    }
+    .nameplate-link:hover,
+    .nameplate-link:focus { color: inherit; text-decoration: none; outline: none; }
+    .nameplate-title {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-size: clamp(2.4rem, 6vw, 3.2rem);
+      font-weight: 900;
+      letter-spacing: -0.025em;
+      line-height: 0.95;
+      color: var(--ink);
+    }
+    .nameplate-rule {
+      width: 48px;
+      height: 1px;
+      background: var(--accent);
+      margin: 0.8rem auto;
+    }
+    .nameplate-tagline {
+      font-size: 12px;
+      font-style: italic;
+      color: var(--ink-light);
+      letter-spacing: 0.04em;
+    }
+    .dateline {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.55rem 0;
+      border-bottom: 1px solid var(--rule);
+    }
+    .dateline span {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 9px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--ink-faint);
+    }
+    .dateline .center { color: var(--rule-heavy); }
+    .section-flag {
+      display: inline-block;
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 8.5px;
+      font-weight: 500;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      background: var(--ink);
+      color: var(--paper);
+      padding: 3px 9px 4px;
+      margin: 1.8rem 0 0;
+    }
+    .articles { margin-top: 0; }
+    .article-item { border-bottom: 1px solid var(--rule); }
+    .article-item:first-of-type { border-top: 1px solid var(--rule); }
+    .article-header {
+      width: 100%;
+      background: none;
+      border: none;
+      padding: 1.15rem 0;
+      text-align: left;
+      cursor: pointer;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 1rem;
+      align-items: start;
+      color: var(--ink);
+    }
+    .article-header:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+    .article-header:hover .hed { color: var(--accent); }
+    .hed {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-size: 1.15rem;
+      font-weight: 700;
+      line-height: 1.3;
+      color: var(--ink);
+      transition: color 0.2s;
+    }
+    .source-line {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 8px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--ink-faint);
+      margin-top: 0.4rem;
+    }
+    .toggle-icon {
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      border: 1px solid var(--rule);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      margin-top: 0.25rem;
+      transition: background 0.2s, border-color 0.2s;
+    }
+    .toggle-icon svg {
+      stroke: var(--ink-light);
+      transition: transform 0.32s cubic-bezier(0.4, 0, 0.2, 1), stroke 0.2s;
+    }
+    .article-item.open .toggle-icon { background: var(--ink); border-color: var(--ink); }
+    .article-item.open .toggle-icon svg { stroke: var(--paper); transform: rotate(45deg); }
+    .article-body {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .article-body-inner {
+      display: grid;
+      grid-template-columns: 3px 1fr;
+      gap: 0 1.2rem;
+      padding-bottom: 1.8rem;
+    }
+    .body-accent-rule { background: var(--accent); border-radius: 1px; }
+    .summary {
+      font-family: 'Source Serif 4', Georgia, serif;
+      font-size: 1rem;
+      font-weight: 300;
+      font-style: italic;
+      line-height: 1.8;
+      color: var(--ink-mid);
+      margin-bottom: 1rem;
+    }
+    .read-more {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 9px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--accent);
+      text-decoration: none;
+      border-bottom: 1px solid currentColor;
+      padding-bottom: 1px;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      transition: opacity 0.15s;
+    }
+    .read-more:hover { opacity: 0.65; }
+    .report-footer {
+      margin-top: 3.5rem;
+      padding-top: 1rem;
+      border-top: 3px double var(--rule-heavy);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+    .report-footer span {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 8.5px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--ink-faint);
+    }
+    .footer-brand {
+      font-family: 'Playfair Display', serif;
+      font-size: 11px;
+      font-style: italic;
+      font-weight: 400;
+      letter-spacing: 0;
+      text-transform: none;
+    }
+    @media (max-width: 520px) {
+      .page { padding: 1.5rem 1rem 4rem; }
+      .nameplate-title { font-size: 2.2rem; }
+      .dateline { flex-direction: column; gap: 0.25rem; text-align: center; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="theme-toggle" id="theme-toggle" role="button" aria-label="Toggle theme" tabindex="0">
+    <div class="toggle-track">
+      <div class="toggle-knob">
+        <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="var(--paper)" stroke-width="2.5" stroke-linecap="round">
+          <circle cx="12" cy="12" r="4"/>
+          <line x1="12" y1="2"  x2="12" y2="5"/>
+          <line x1="12" y1="19" x2="12" y2="22"/>
+          <line x1="2"  y1="12" x2="5"  y2="12"/>
+          <line x1="19" y1="12" x2="22" y2="12"/>
+          <line x1="4.22"  y1="4.22"  x2="6.34"  y2="6.34"/>
+          <line x1="17.66" y1="17.66" x2="19.78" y2="19.78"/>
+          <line x1="4.22"  y1="19.78" x2="6.34"  y2="17.66"/>
+          <line x1="17.66" y1="6.34"  x2="19.78" y2="4.22"/>
+        </svg>
+        <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="var(--paper)" stroke-width="2.5" stroke-linecap="round">
+          <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+        </svg>
+      </div>
+    </div>
+  </div>
+
+  <div class="page">
+
+    <header class="nameplate">
+      <h1 class="nameplate-title">
+        <a class="nameplate-link" href="AI_News_Insights_07APR2026.html" target="_blank" rel="noopener noreferrer">The Inference</a>
+      </h1>
+      <div class="nameplate-rule"></div>
+      <p class="nameplate-tagline">A curated daily briefing on artificial intelligence</p>
+    </header>
+
+    <div class="dateline">
+      <span>TUESDAY, 7 APRIL 2026</span>
+      <span class="center">· Synthesised at 4:59 AM EDT ·</span>
+      <span>Curated from 17 sources</span>
+    </div>
+
+    <span class="section-flag">Top Stories</span>
+
+    <div class="articles">
+
+      <div class="article-item">
+        <button class="article-header" aria-expanded="false">
+          <div>
+            <p class="hed">RightNow AI Releases AutoKernel: An Open-Source Framework that Applies an Autonomous Agent Loop to GPU Kernel Optimization for Arbitrary PyTorch Models</p>
+            <p class="source-line">marktechpost.com</p>
+          </div>
+          <div class="toggle-icon" aria-hidden="true">
+            <svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke-width="1.5" stroke-linecap="round">
+              <line x1="5" y1="1" x2="5" y2="9"/>
+              <line x1="1" y1="5" x2="9" y2="5"/>
+            </svg>
+          </div>
+        </button>
+        <div class="article-body" role="region">
+          <div class="article-body-inner">
+            <div class="body-accent-rule"></div>
+            <div>
+              <p class="summary">RightNow AI has released AutoKernel, an open-source framework leveraging an autonomous LLM agent loop to automate GPU kernel optimization for PyTorch models, addressing the scarcity of expertise and manual tuning challenges in this complex field. The system, inspired by Andrej Karpathy’s autoresearch project, iteratively edits, benchmarks, and validates kernel code, utilizing a comprehensive 909-line instruction document to guide optimization across various tiers, from block size tuning to advanced algorithms. AutoKernel prioritizes optimization targets based on their impact on overall runtime using Amdahl’s law and incorporates a rigorous five-stage correctness harness to ensure reliability, supporting both Triton and CUDA C++ backends.</p>
+              <a href="https://www.marktechpost.com/2026/04/06/rightnow-ai-releases-autokernel-an-open-source-framework-that-applies-an-autonomous-agent-loop-to-gpu-kernel-optimization-for-arbitrary-pytorch-models/" class="read-more" target="_blank" rel="noopener noreferrer">
+                Continue reading at marktechpost.com →
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="article-item">
+        <button class="article-header" aria-expanded="false">
+          <div>
+            <p class="hed">The three questions a CEO should ask about their AI agents</p>
+            <p class="source-line">semafor.com</p>
+          </div>
+          <div class="toggle-icon" aria-hidden="true">
+            <svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke-width="1.5" stroke-linecap="round">
+              <line x1="5" y1="1" x2="5" y2="9"/>
+              <line x1="1" y1="5" x2="9" y2="5"/>
+            </svg>
+          </div>
+        </button>
+        <div class="article-body" role="region">
+          <div class="article-body-inner">
+            <div class="body-accent-rule"></div>
+            <div>
+              <p class="summary">Okta CEO Todd McKinnon warns that companies are rushing to integrate AI agents like OpenClaw without understanding the associated security risks, as executives prioritize rapid AI adoption driven by competitive pressure. He emphasizes the need for organizations to identify and control their AI agents—knowing their location, data access, and potential actions—a challenge IT departments often struggle with. McKinnon advocates for increased organizational flexibility and rapid adaptation, alongside a collaborative industry blueprint, to navigate the evolving agentic AI landscape and ensure secure implementation.</p>
+              <a href="https://www.semafor.com/article/04/03/2026/the-three-questions-a-ceo-should-ask-about-their-ai-agents" class="read-more" target="_blank" rel="noopener noreferrer">
+                Continue reading at semafor.com →
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="article-item">
+        <button class="article-header" aria-expanded="false">
+          <div>
+            <p class="hed">Tech companies are cutting jobs and betting on AI. The payoff is far from guaranteed</p>
+            <p class="source-line">theguardian.com</p>
+          </div>
+          <div class="toggle-icon" aria-hidden="true">
+            <svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke-width="1.5" stroke-linecap="round">
+              <line x1="5" y1="1" x2="5" y2="9"/>
+              <line x1="1" y1="5" x2="9" y2="5"/>
+            </svg>
+          </div>
+        </button>
+        <div class="article-body" role="region">
+          <div class="article-body-inner">
+            <div class="body-accent-rule"></div>
+            <div>
+              <p class="summary">Driven by rapid investment and hype surrounding artificial intelligence, major US tech companies like Microsoft, Amazon, Block, and Meta have implemented significant layoffs, exceeding 165,000 in the past year. While AI is accelerating coding and data analysis, experts caution that current AI capabilities are overstated and unreliable, leading to unforeseen consequences like increased code review backlogs and problematic deployments. This experimentation phase is reshaping job expectations, with employees facing pressure to adopt AI tools, sometimes accompanied by surveillance, and raising concerns about the future of tech careers and broader workforce implications across industries.</p>
+              <a href="https://www.theguardian.com/technology/2026/apr/06/tech-layoffs-ai-work" class="read-more" target="_blank" rel="noopener noreferrer">
+                Continue reading at theguardian.com →
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="article-item">
+        <button class="article-header" aria-expanded="false">
+          <div>
+            <p class="hed">AI offensive cyber capabilities are doubling every six months, safety researchers find</p>
+            <p class="source-line">the-decoder.com</p>
+          </div>
+          <div class="toggle-icon" aria-hidden="true">
+            <svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke-width="1.5" stroke-linecap="round">
+              <line x1="5" y1="1" x2="5" y2="9"/>
+              <line x1="1" y1="5" x2="9" y2="5"/>
+            </svg>
+          </div>
+        </button>
+        <div class="article-body" role="region">
+          <div class="article-body-inner">
+            <div class="body-accent-rule"></div>
+            <div>
+              <p class="summary">A new study by Lyptus Research reveals a concerning acceleration in AI's offensive cyber capabilities, doubling every 5.7 months since 2024 – a significant increase from the 9.8-month rate observed since 2019. Utilizing the METR time-horizon method and expert testing, the research demonstrates that models like GPT-5.3 Codex can now achieve a 50% success rate on tasks typically requiring three hours of human expert time, with performance scaling substantially with increased token budgets. This rapid technical advancement, underpinned by 291 tested tasks and publicly available data, suggests current progress estimations may be conservative, particularly as closed-source models currently outperform open-source alternatives. The findings highlight a growing need for proactive cybersecurity measures to address this escalating threat.</p>
+              <a href="https://the-decoder.com/ai-offensive-cyber-capabilities-are-doubling-every-six-months-safety-researchers-find/" class="read-more" target="_blank" rel="noopener noreferrer">
+                Continue reading at the-decoder.com →
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="article-item">
+        <button class="article-header" aria-expanded="false">
+          <div>
+            <p class="hed">Trump ignores biggest reasons his AI data center buildout is failing</p>
+            <p class="source-line">arstechnica.com</p>
+          </div>
+          <div class="toggle-icon" aria-hidden="true">
+            <svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke-width="1.5" stroke-linecap="round">
+              <line x1="5" y1="1" x2="5" y2="9"/>
+              <line x1="1" y1="5" x2="9" y2="5"/>
+            </svg>
+          </div>
+        </button>
+        <div class="article-body" role="region">
+          <div class="article-body-inner">
+            <div class="body-accent-rule"></div>
+            <div>
+              <p class="summary">Donald Trump's push to accelerate US AI development through rapid data center construction is being significantly hampered by his own trade policies. Aggressive tariffs on Chinese imports are causing severe delays—potentially up to five years—in acquiring essential components like transformers and switchgear, vital for data center power infrastructure. This shortage, stemming from limited US manufacturing capacity, threatens to delay or cancel nearly half of planned US data centers by this year, potentially jeopardizing America's lead in the AI race against China, which Trump aims to win. Despite calls for domestic production, developers are increasingly willing to absorb tariffs to secure timely imports from China.</p>
+              <a href="https://arstechnica.com/tech-policy/2026/04/sad-trumps-ai-data-center-push-is-failing-blame-his-own-tariffs/" class="read-more" target="_blank" rel="noopener noreferrer">
+                Continue reading at arstechnica.com →
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="article-item">
+        <button class="article-header" aria-expanded="false">
+          <div>
+            <p class="hed">Chinese firms trail US peers in AI adoption due to corporate culture: ex-OpenAI executive</p>
+            <p class="source-line">scmp.com</p>
+          </div>
+          <div class="toggle-icon" aria-hidden="true">
+            <svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke-width="1.5" stroke-linecap="round">
+              <line x1="5" y1="1" x2="5" y2="9"/>
+              <line x1="1" y1="5" x2="9" y2="5"/>
+            </svg>
+          </div>
+        </button>
+        <div class="article-body" role="region">
+          <div class="article-body-inner">
+            <div class="body-accent-rule"></div>
+            <div>
+              <p class="summary">Despite having tech-enthusiastic consumers, Chinese firms are lagging behind their US counterparts in AI adoption, according to former OpenAI executive Zack Kass. He attributes this disparity to a cultural difference where the US prioritizes "techno-centric enterprises," while China focuses on the consumer. This explains the rapid uptake of platforms like OpenClaw in China, contrasting with slower adoption in the US, where consumer skepticism towards big tech is higher. Kass's observations highlight a significant cultural driver impacting AI implementation strategies across the two nations.</p>
+              <a href="https://www.scmp.com/tech/policy/article/3348956/chinese-firms-trail-us-peers-ai-adoption-due-corporate-culture-ex-openai-executive?utm_source=rss_feed" class="read-more" target="_blank" rel="noopener noreferrer">
+                Continue reading at scmp.com →
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="article-item">
+        <button class="article-header" aria-expanded="false">
+          <div>
+            <p class="hed">AI companies are building huge natural gas plants to power data centers. What could go wrong?</p>
+            <p class="source-line">techcrunch.com</p>
+          </div>
+          <div class="toggle-icon" aria-hidden="true">
+            <svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke-width="1.5" stroke-linecap="round">
+              <line x1="5" y1="1" x2="5" y2="9"/>
+              <line x1="1" y1="5" x2="9" y2="5"/>
+            </svg>
+          </div>
+        </button>
+        <div class="article-body" role="region">
+          <div class="article-body-inner">
+            <div class="body-accent-rule"></div>
+            <div>
+              <p class="summary">Driven by the surging demand for power from AI applications, major tech companies like Microsoft, Google, and Meta are aggressively investing in natural gas power plants across the southern U.S., aiming to secure energy supplies and bypass grid constraints. This rapid expansion, fueled by a "fear of missing out" (FOMO), has created a shortage of turbines, with prices expected to surge and delivery times stretching to six years. While U.S. natural gas reserves are currently substantial, production growth has slowed, and reliance on this finite resource raises concerns about potential price volatility, broader electricity cost increases, and resource competition with other industries, particularly during periods of high demand or adverse weather conditions. The strategy of "bringing their own power" ultimately shifts the strain to the natural gas grid, highlighting the physical limitations of the digital world.</p>
+              <a href="https://techcrunch.com/2026/04/03/ai-companies-are-building-huge-natural-gas-plants-to-power-data-centers-what-could-go-wrong/" class="read-more" target="_blank" rel="noopener noreferrer">
+                Continue reading at techcrunch.com →
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="article-item">
+        <button class="article-header" aria-expanded="false">
+          <div>
+            <p class="hed">Meet ‘AutoAgent’: The Open-Source Library That Lets an AI Engineer and Optimize Its Own Agent Harness Overnight</p>
+            <p class="source-line">marktechpost.com</p>
+          </div>
+          <div class="toggle-icon" aria-hidden="true">
+            <svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke-width="1.5" stroke-linecap="round">
+              <line x1="5" y1="1" x2="5" y2="9"/>
+              <line x1="1" y1="5" x2="9" y2="5"/>
+            </svg>
+          </div>
+        </button>
+        <div class="article-body" role="region">
+          <div class="article-body-inner">
+            <div class="body-accent-rule"></div>
+            <div>
+              <p class="summary">Kevin Gu's thirdlayer.inc has released AutoAgent, an open-source library that automates the tedious prompt-tuning loop in agent engineering, drawing inspiration from Andrej Karpathy's autoresearch for ML training. The system utilizes a "meta-agent" to autonomously modify an agent's harness—including system prompts, tools, and orchestration—running benchmarks and iteratively improving performance. Demonstrating its effectiveness, AutoAgent achieved top scores on SpreadsheetBench (96.5%) and TerminalBench (55.1%) within 24 hours, shifting the human role from engineer to director who sets high-level goals. The library's design is plug-and-play, compatible with any benchmark adhering to the Harbor format.</p>
+              <a href="https://www.marktechpost.com/2026/04/05/meet-autoagent-the-open-source-library-that-lets-an-ai-engineer-and-optimize-its-own-agent-harness-overnight/" class="read-more" target="_blank" rel="noopener noreferrer">
+                Continue reading at marktechpost.com →
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="article-item">
+        <button class="article-header" aria-expanded="false">
+          <div>
+            <p class="hed">Chinese AI giants pivot toward proprietary models to drive revenue, performance</p>
+            <p class="source-line">scmp.com</p>
+          </div>
+          <div class="toggle-icon" aria-hidden="true">
+            <svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke-width="1.5" stroke-linecap="round">
+              <line x1="5" y1="1" x2="5" y2="9"/>
+              <line x1="1" y1="5" x2="9" y2="5"/>
+            </svg>
+          </div>
+        </button>
+        <div class="article-body" role="region">
+          <div class="article-body-inner">
+            <div class="body-accent-rule"></div>
+            <div>
+              <p class="summary">Driven by a desire to capture revenue and address the escalating resource demands of advanced AI models, Chinese tech giants like Alibaba and Zhipu AI are increasingly prioritizing proprietary models over open-source strategies. Alibaba recently launched Qwen3.6-Plus and Qwen3.5-Omni, powerful multimodal models accessible exclusively through its cloud platform and chatbot, citing lower developer adoption of the previous open-sourced Omni version. This shift reflects a broader industry trend where the complexity and size of leading AI models make self-hosting challenging, incentivizing companies to monetize them through controlled access.</p>
+              <a href="https://www.scmp.com/tech/big-tech/article/3348844/chinese-ai-giants-pivot-toward-proprietary-models-drive-revenue-performance?utm_source=rss_feed" class="read-more" target="_blank" rel="noopener noreferrer">
+                Continue reading at scmp.com →
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="article-item">
+        <button class="article-header" aria-expanded="false">
+          <div>
+            <p class="hed">Eli Lilly leans into AI drug discovery with new licensing deal</p>
+            <p class="source-line">semafor.com</p>
+          </div>
+          <div class="toggle-icon" aria-hidden="true">
+            <svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke-width="1.5" stroke-linecap="round">
+              <line x1="5" y1="1" x2="5" y2="9"/>
+              <line x1="1" y1="5" x2="9" y2="5"/>
+            </svg>
+          </div>
+        </button>
+        <div class="article-body" role="region">
+          <div class="article-body-inner">
+            <div class="body-accent-rule"></div>
+            <div>
+              <p class="summary">Eli Lilly has entered a $2.75 billion agreement with Hong Kong-listed Insilico Medicine to leverage generative AI for drug development, reflecting a broader industry trend toward AI-driven research for accelerated speed and accuracy. Insilico, which has already produced 28 drug candidates with nearly half in clinical trials, highlights China's expanding role in the global pharmaceutical landscape. This deal, alongside Lilly's planned $3 billion investment in China over the next decade, signals increased licensing of treatments from Chinese firms by international companies. The partnership underscores the financial driver of utilizing AI to expedite and improve drug discovery processes.</p>
+              <a href="https://www.semafor.com/article/03/29/2026/eli-lilly-leans-into-ai-drug-discovery" class="read-more" target="_blank" rel="noopener noreferrer">
+                Continue reading at semafor.com →
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <footer class="report-footer">
+      <span class="footer-brand">An agentic pipeline experiment by ThiruCoding</span>
+      <span>All rights reserved · 2026</span>
+    </footer>
+
+  </div>
+
+  <script>
+    document.querySelectorAll('.article-header').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const item   = btn.closest('.article-item');
+        const body   = item.querySelector('.article-body');
+        const isOpen = item.classList.contains('open');
+        document.querySelectorAll('.article-item.open').forEach(el => {
+          el.classList.remove('open');
+          el.querySelector('.article-body').style.maxHeight = null;
+          el.querySelector('.article-header').setAttribute('aria-expanded', 'false');
+        });
+        if (!isOpen) {
+          item.classList.add('open');
+          body.style.maxHeight = body.scrollHeight + 'px';
+          btn.setAttribute('aria-expanded', 'true');
+        }
+      });
+    });
+
+    const root   = document.documentElement;
+    const toggle = document.getElementById('theme-toggle');
+    function applyTheme(mode) {
+      root.setAttribute('data-theme', mode);
+      try { localStorage.setItem('the-inference-theme', mode); } catch(e) {}
+    }
+    const stored = (() => { try { return localStorage.getItem('the-inference-theme'); } catch(e) { return null; } })();
+    const system = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    applyTheme(stored || system);
+    toggle.addEventListener('click', () => {
+      const current = root.getAttribute('data-theme') || 'light';
+      applyTheme(current === 'light' ? 'dark' : 'light');
+    });
+    toggle.addEventListener('keydown', e => {
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggle.click(); }
+    });
+    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
+      const saved = (() => { try { return localStorage.getItem('the-inference-theme'); } catch(e) { return null; } })();
+      if (!saved) applyTheme(e.matches ? 'dark' : 'light');
+    });
+  </script>
+
+</body>
+</html>
