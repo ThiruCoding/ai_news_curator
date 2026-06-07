@@ -1,0 +1,1997 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>The Inference — Inside the Machine — SUNDAY, 7 JUNE 2026</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,400;1,700&family=Source+Serif+4:ital,opsz,wght@0,8..60,300;0,8..60,400;1,8..60,300;1,8..60,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    /* ── Token System ── */
+    :root {
+      --ink:        #1a1410;
+      --ink-mid:    #3d3530;
+      --ink-light:  #6b625a;
+      --ink-faint:  #a09890;
+      --paper:      #f7f4ee;
+      --paper-warm: #ede9e0;
+      --rule:       #c8bfb0;
+      --rule-heavy: #8c7e6e;
+      --accent:     #8b1a1a;
+
+      /* Tier colours */
+      --tier-s: #5c7a6e;
+      --tier-a: #6e6a3a;
+      --tier-b: #4a6278;
+      --tier-c: #7a5c5c;
+
+      /* Score bar colours */
+      --bar-tech:  #4a6278;
+      --bar-biz:   #6e6a3a;
+      --bar-noise: #8b3a3a;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --ink:        #f0ece4;
+        --ink-mid:    #cdc5bb;
+        --ink-light:  #9d9288;
+        --ink-faint:  #6b625a;
+        --paper:      #16120e;
+        --paper-warm: #1e1a15;
+        --rule:       #2e2820;
+        --rule-heavy: #4a4038;
+        --accent:     #c9544e;
+        --tier-s: #7aaa98;
+        --tier-a: #a8a464;
+        --tier-b: #6a92b0;
+        --tier-c: #aa7a7a;
+        --bar-tech:  #6a92b0;
+        --bar-biz:   #a8a464;
+        --bar-noise: #c97070;
+      }
+    }
+    html[data-theme="light"] {
+      --ink:        #1a1410; --ink-mid:    #3d3530; --ink-light:  #6b625a;
+      --ink-faint:  #a09890; --paper:      #f7f4ee; --paper-warm: #ede9e0;
+      --rule:       #c8bfb0; --rule-heavy: #8c7e6e; --accent:     #8b1a1a;
+      --tier-s: #5c7a6e; --tier-a: #6e6a3a; --tier-b: #4a6278; --tier-c: #7a5c5c;
+      --bar-tech: #4a6278; --bar-biz: #6e6a3a; --bar-noise: #8b3a3a;
+    }
+    html[data-theme="dark"] {
+      --ink:        #f0ece4; --ink-mid:    #cdc5bb; --ink-light:  #9d9288;
+      --ink-faint:  #6b625a; --paper:      #16120e; --paper-warm: #1e1a15;
+      --rule:       #2e2820; --rule-heavy: #4a4038; --accent:     #c9544e;
+      --tier-s: #7aaa98; --tier-a: #a8a464; --tier-b: #6a92b0; --tier-c: #aa7a7a;
+      --bar-tech: #6a92b0; --bar-biz: #a8a464; --bar-noise: #c97070;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Source Serif 4', Georgia, serif;
+      background: var(--paper);
+      color: var(--ink);
+      transition: background 0.35s, color 0.35s;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ── Layout ── */
+    .page { max-width: 780px; margin: 0 auto; padding: 2.5rem 1.5rem 6rem; }
+
+    /* ── Theme Toggle ── */
+    .theme-toggle {
+      position: fixed; top: 1.2rem; right: 1.2rem; z-index: 99;
+    }
+    .toggle-track {
+      width: 52px; height: 28px; background: var(--paper-warm);
+      border: 1px solid var(--rule); border-radius: 14px;
+      position: relative; cursor: pointer; transition: background 0.3s, border-color 0.3s;
+    }
+    .toggle-knob {
+      position: absolute; top: 3px; left: 3px; width: 20px; height: 20px;
+      border-radius: 50%; background: var(--ink);
+      display: flex; align-items: center; justify-content: center;
+      transition: transform 0.3s cubic-bezier(0.4,0,0.2,1), background 0.3s;
+    }
+    html[data-theme="dark"] .toggle-knob { transform: translateX(24px); }
+    .icon-sun, .icon-moon { position: absolute; width: 12px; height: 12px; transition: opacity 0.25s; }
+    html[data-theme="light"] .icon-sun  { opacity: 0; }
+    html[data-theme="light"] .icon-moon { opacity: 1; }
+    html[data-theme="dark"]  .icon-sun  { opacity: 1; }
+    html[data-theme="dark"]  .icon-moon { opacity: 0; }
+
+    /* ── Nameplate ── */
+    .nameplate {
+      text-align: center; padding: 1.8rem 0 1.2rem;
+      border-bottom: 3px double var(--rule-heavy);
+    }
+    .nameplate-eyebrow {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 8.5px; letter-spacing: 0.28em; text-transform: uppercase;
+      color: var(--accent); margin-bottom: 0.6rem;
+    }
+    .nameplate-title {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-size: clamp(1.6rem, 4vw, 2.2rem);
+      font-weight: 700; letter-spacing: -0.02em; color: var(--ink);
+    }
+    .nameplate-sub {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(1rem, 2.5vw, 1.25rem);
+      font-style: italic; font-weight: 400;
+      color: var(--ink-light); margin-top: 0.3rem;
+    }
+    .nameplate-rule { width: 48px; height: 1px; background: var(--accent); margin: 0.8rem auto; }
+
+    /* ── Dateline ── */
+    .dateline {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 0.55rem 0; border-bottom: 1px solid var(--rule);
+      flex-wrap: wrap; gap: 0.25rem;
+    }
+    .dateline span {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 9px; letter-spacing: 0.12em; text-transform: uppercase;
+      color: var(--ink-faint);
+    }
+    .dateline .center { color: var(--rule-heavy); }
+    .back-link {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 9px; letter-spacing: 0.15em; text-transform: uppercase;
+      color: var(--accent); text-decoration: none;
+      border-bottom: 1px solid currentColor; padding-bottom: 1px;
+      transition: opacity 0.15s;
+    }
+    .back-link:hover { opacity: 0.65; }
+
+    /* ── Section Flag ── */
+    .section-flag {
+      display: inline-block;
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 8.5px; font-weight: 500; letter-spacing: 0.22em; text-transform: uppercase;
+      background: var(--ink); color: var(--paper);
+      padding: 3px 9px 4px; margin: 2.2rem 0 1.2rem;
+    }
+
+    /* ── Pipeline Health Banner ── */
+    .health-banner {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      border: 1px solid var(--rule);
+      margin-bottom: 0.5rem;
+    }
+    .stat-block {
+      padding: 1.2rem 1rem;
+      border-right: 1px solid var(--rule);
+      text-align: center;
+    }
+    .stat-block:last-child { border-right: none; }
+    .stat-number {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(1.8rem, 4vw, 2.4rem);
+      font-weight: 900; color: var(--ink); line-height: 1;
+    }
+    .stat-label {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 7.5px; letter-spacing: 0.18em; text-transform: uppercase;
+      color: var(--ink-faint); margin-top: 0.4rem;
+    }
+    .stat-accent { color: var(--accent); }
+
+    /* ── Prioritizer Animation ── */
+    .prioritizer-wrap {
+      width: 100%;
+      background: var(--paper-warm);
+      border: 1px solid var(--rule);
+      overflow: hidden;
+    }
+    #prioritizer-canvas {
+      display: block;
+      width: 100%;
+      height: auto;
+    }
+
+    /* ── Analyst Agent Animation ── */
+    .analyst-wrap {
+      width: 100%;
+      background: var(--paper-warm);
+      border: 1px solid var(--rule);
+      overflow: hidden;
+    }
+    #analyst-canvas {
+      display: block;
+      width: 100%;
+      height: auto;
+    }
+
+    /* ── Source Bar Chart ── */
+    .source-chart { display: flex; flex-direction: column; gap: 0.5rem; }
+    .source-row {
+      display: grid;
+      grid-template-columns: 130px 1fr auto;
+      align-items: center;
+      gap: 0.6rem;
+    }
+    .source-name {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 8px; letter-spacing: 0.1em; text-transform: uppercase;
+      color: var(--ink-light); text-align: right;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .bar-track {
+      height: 14px;
+      background: var(--paper-warm);
+      border: 1px solid var(--rule);
+      position: relative;
+      overflow: hidden;
+    }
+    .bar-fill {
+      height: 100%;
+      transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .bar-count {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 8px; color: var(--ink-faint); min-width: 24px; text-align: right;
+    }
+    .top10-badge {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 7px; letter-spacing: 0.1em; text-transform: uppercase;
+      background: var(--accent); color: var(--paper);
+      padding: 1px 4px; border-radius: 2px; margin-left: 4px;
+    }
+
+    /* ── Scoring Cards ── */
+    .cards-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1.2rem;
+    }
+    .score-card {
+      border: 1px solid var(--rule);
+      padding: 1.2rem 1.2rem 1rem;
+      background: var(--paper-warm);
+      position: relative;
+    }
+    .card-rank {
+      font-family: 'Playfair Display', serif;
+      font-size: 3rem; font-weight: 900; line-height: 1;
+      color: var(--rule); position: absolute;
+      top: 0.6rem; right: 0.8rem;
+    }
+    .card-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 0.95rem; font-weight: 700; line-height: 1.35;
+      color: var(--ink); margin-bottom: 0.3rem;
+      padding-right: 2.5rem;
+    }
+    .card-domain {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 7.5px; letter-spacing: 0.12em; text-transform: uppercase;
+      color: var(--ink-faint); margin-bottom: 0.9rem;
+    }
+    .score-bars { display: flex; flex-direction: column; gap: 0.4rem; margin-bottom: 0.9rem; }
+    .score-bar-row { display: grid; grid-template-columns: 52px 1fr 32px; align-items: center; gap: 0.4rem; }
+    .score-bar-label {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 7px; letter-spacing: 0.1em; text-transform: uppercase;
+      color: var(--ink-faint); text-align: right;
+    }
+    .score-bar-track {
+      height: 6px; background: var(--rule); border-radius: 1px; overflow: hidden;
+    }
+    .score-bar-fill { height: 100%; border-radius: 1px; }
+    .score-bar-val {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 7px; color: var(--ink-light); text-align: right;
+    }
+    .card-footer {
+      display: flex; justify-content: space-between; align-items: center;
+      border-top: 1px solid var(--rule); padding-top: 0.6rem; margin-top: 0.3rem;
+    }
+    .card-priority {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 9px; color: var(--ink);
+    }
+    .card-priority strong { color: var(--accent); }
+    .card-weight {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 7.5px; letter-spacing: 0.08em;
+      background: var(--rule); color: var(--ink-light);
+      padding: 2px 5px; border-radius: 2px;
+    }
+    .card-read {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 8px; letter-spacing: 0.15em; text-transform: uppercase;
+      color: var(--accent); text-decoration: none;
+      border-bottom: 1px solid currentColor; padding-bottom: 1px;
+      transition: opacity 0.15s;
+    }
+    .card-read:hover { opacity: 0.65; }
+
+    /* ── Vector Definitions ── */
+    .vector-blocks { display: flex; flex-direction: column; gap: 1.2rem; }
+    .vector-block {
+      display: grid;
+      grid-template-columns: 3px 1fr;
+      gap: 0 1.2rem;
+    }
+    .vector-rule { border-radius: 1px; }
+    .vector-label {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 8.5px; letter-spacing: 0.2em; text-transform: uppercase;
+      color: var(--ink-faint); margin-bottom: 0.35rem;
+    }
+    .vector-text {
+      font-family: 'Source Serif 4', serif;
+      font-size: 0.95rem; font-weight: 300; font-style: italic;
+      line-height: 1.75; color: var(--ink-mid);
+    }
+
+    /* ── Footer ── */
+    .report-footer {
+      margin-top: 3.5rem; padding-top: 1rem;
+      border-top: 3px double var(--rule-heavy);
+      display: flex; justify-content: space-between; align-items: center;
+      flex-wrap: wrap; gap: 0.5rem;
+    }
+    .report-footer span {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 8.5px; letter-spacing: 0.12em; text-transform: uppercase;
+      color: var(--ink-faint);
+    }
+    .footer-brand {
+      font-family: 'Playfair Display', serif;
+      font-size: 11px; font-style: italic; font-weight: 400;
+      letter-spacing: 0; text-transform: none;
+    }
+
+    /* ── Vector Pull Animation ── */
+    .vector-pull-wrap {
+      width: 100%;
+      background: var(--paper-warm);
+      border: 1px solid var(--rule);
+      overflow: hidden;
+      position: relative;
+    }
+    #vector-pull-canvas {
+      display: block;
+      width: 100%;
+      height: auto;
+    }
+    .anim-caption {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 8px; letter-spacing: 0.14em; text-transform: uppercase;
+      color: var(--ink-faint); text-align: center;
+      padding: 0.5rem 0 0.7rem;
+      border-top: 1px solid var(--rule);
+      background: var(--paper-warm);
+    }
+
+    /* ── Filter Funnel Animation ── */
+    .funnel-wrap {
+      width: 100%;
+      background: var(--paper-warm);
+      border: 1px solid var(--rule);
+      overflow: hidden;
+    }
+    #funnel-canvas {
+      display: block;
+      width: 100%;
+      height: auto;
+    }
+
+    /* ── Responsive ── */
+    @media (max-width: 600px) {
+      .health-banner { grid-template-columns: repeat(2, 1fr); }
+      .stat-block:nth-child(2) { border-right: none; }
+      .stat-block:nth-child(3) { border-top: 1px solid var(--rule); }
+      .stat-block:nth-child(4) { border-top: 1px solid var(--rule); border-right: none; }
+      .cards-grid { grid-template-columns: 1fr; }
+      .source-row { grid-template-columns: 90px 1fr auto; }
+      .page { padding: 1.5rem 1rem 4rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Theme Toggle -->
+  <div class="theme-toggle" id="theme-toggle" role="button" aria-label="Toggle theme" tabindex="0">
+    <div class="toggle-track">
+      <div class="toggle-knob">
+        <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="var(--paper)" stroke-width="2.5" stroke-linecap="round">
+          <circle cx="12" cy="12" r="4"/>
+          <line x1="12" y1="2"  x2="12" y2="5"/><line x1="12" y1="19" x2="12" y2="22"/>
+          <line x1="2"  y1="12" x2="5"  y2="12"/><line x1="19" y1="12" x2="22" y2="12"/>
+          <line x1="4.22" y1="4.22" x2="6.34" y2="6.34"/><line x1="17.66" y1="17.66" x2="19.78" y2="19.78"/>
+          <line x1="4.22" y1="19.78" x2="6.34" y2="17.66"/><line x1="17.66" y1="6.34" x2="19.78" y2="4.22"/>
+        </svg>
+        <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="var(--paper)" stroke-width="2.5" stroke-linecap="round">
+          <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+        </svg>
+      </div>
+    </div>
+  </div>
+
+  <div class="page">
+
+    <!-- Nameplate -->
+    <header class="nameplate">
+      <h1 class="nameplate-title">The Inference</h1>
+      <p class="nameplate-sub">How today's briefing was assembled</p>
+      <div class="nameplate-rule"></div>
+    </header>
+
+    <!-- Dateline -->
+    <div class="dateline">
+      <span>SUNDAY, 7 JUNE 2026</span>
+      <span class="center">· Agentic Pipeline ran at 6:25 AM EDT ·</span>
+      <a href="AI_News_07JUN2026.html" class="back-link">← Back to briefing</a>
+    </div>
+
+    <!-- Section 1: Pipeline Health -->
+    <span class="section-flag">Pipeline Health</span>
+    <div class="health-banner">
+      <div class="stat-block">
+        <div class="stat-number">621</div>
+        <div class="stat-label">Articles ingested</div>
+      </div>
+      <div class="stat-block">
+        <div class="stat-number">168</div>
+        <div class="stat-label">Passed curation</div>
+      </div>
+      <div class="stat-block">
+        <div class="stat-number stat-accent">27.1%</div>
+        <div class="stat-label">Pass rate</div>
+      </div>
+      <div class="stat-block">
+        <div class="stat-number">17<span style="font-size:1.2rem;color:var(--ink-faint)">/17</span></div>
+        <div class="stat-label">Sources active</div>
+      </div>
+    </div>
+
+    <!-- Section 2: Semantic Scoring -->
+    <span class="section-flag">Semantic Scoring</span>
+    <p style="font-family:'Source Serif 4',serif;font-size:0.88rem;font-style:italic;color:var(--ink-light);margin-bottom:0.8rem;line-height:1.6;">
+      Each article title is converted into a 384-dimension vector and measured against three anchors using cosine similarity. The article is pulled toward whichever vector it most resembles.
+    </p>
+    <div class="vector-pull-wrap">
+      <canvas id="vector-pull-canvas" style="display:block;width:100%;"></canvas>
+      <div class="anim-caption">Three-vector cosine similarity pull — looping conceptual diagram</div>
+    </div>
+
+    <!-- Section 3: Curation Filter -->
+    <span class="section-flag">Curation Filter</span>
+    <p style="font-family:'Source Serif 4',serif;font-size:0.88rem;font-style:italic;color:var(--ink-light);margin-bottom:0.8rem;line-height:1.6;">
+      Each article title is embedded by <strong style="font-style:normal;font-family:'IBM Plex Mono',monospace;font-size:0.78rem;color:var(--ink-light);">SentenceTransformer · all-MiniLM-L6-v2</strong> into a 384-dimension vector, then scored against three anchors. Two sequential gates determine if it enters the curated pool. Cycling through four real articles from today's run.
+    </p>
+    <div class="funnel-wrap" style="position:relative;">
+      <canvas id="funnel-canvas" style="display:block;width:100%;cursor:pointer;" title="Click to pause / resume"></canvas>
+      <div class="anim-caption">Embedding → scoring → gate logic → priority — live worked examples</div>
+    </div>
+
+    <!-- Section 4: Curation Yield by Source -->
+    <span class="section-flag">Curation Yield by Source</span>
+    <div class="source-chart" id="source-chart"></div>
+
+    <!-- Section 5: Prioritizer -->
+    <span class="section-flag">Prioritizer</span>
+    <p style="font-family:'Source Serif 4',serif;font-size:0.88rem;font-style:italic;color:var(--ink-light);margin-bottom:0.8rem;line-height:1.6;">
+      The curated pool is ranked by priority score, then two filters are applied — a source diversity cap and a deduplication pass — before the top 10 are selected.
+    </p>
+    <div class="prioritizer-wrap">
+      <canvas id="prioritizer-canvas" style="display:block;width:100%;"></canvas>
+      <div class="anim-caption">Sort → diversity cap → deduplication → top 10 selection</div>
+    </div>
+
+    <!-- Section 6: Article Scoring -->
+    <span class="section-flag">Article Scoring</span>
+    <div class="cards-grid" id="cards-grid"></div>
+
+    <!-- Section 7: Analyst Agent -->
+    <span class="section-flag">Analyst Agent</span>
+    <p style="font-family:'Source Serif 4',serif;font-size:0.88rem;font-style:italic;color:var(--ink-light);margin-bottom:0.8rem;line-height:1.6;">
+      Each of the top 10 articles is fetched in full via <strong style="font-style:normal;font-family:'IBM Plex Mono',monospace;font-size:0.78rem;color:var(--ink-light);">trafilatura</strong> a Python package designed to gather text on the web, then sent to <strong style="font-style:normal;font-family:'IBM Plex Mono',monospace;font-size:0.78rem;color:var(--ink-light);">gemma-3-12b-it</strong> model for grounded narrative synthesis.
+    </p>
+    <div class="analyst-wrap">
+      <canvas id="analyst-canvas" style="display:block;width:100%;"></canvas>
+      <div class="anim-caption">Fetch → extract → synthesise — illustrative pipeline diagram</div>
+    </div>
+
+    <!-- Section 7: Semantic Vectors -->
+    <span class="section-flag">Semantic Vectors</span>
+    <p style="font-family:'Source Serif 4',serif;font-size:0.88rem;font-style:italic;color:var(--ink-light);margin-bottom:1rem;line-height:1.6;">
+      The three vector anchors that drive curation. Each article title is embedded and scored against all three using cosine similarity.
+    </p>
+    <div class="vector-blocks">
+      <div class="vector-block">
+        <div class="vector-rule" style="background:var(--bar-tech)"></div>
+        <div>
+          <div class="vector-label">Technical Interest Vector</div>
+          <p class="vector-text">New AI model architectures, significant research breakthroughs, GPU and infrastructure hardware developments, foundational model releases, and large-scale engineering implementations of machine learning systems.</p>
+        </div>
+      </div>
+      <div class="vector-block">
+        <div class="vector-rule" style="background:var(--bar-biz)"></div>
+        <div>
+          <div class="vector-label">Business Interest Vector</div>
+          <p class="vector-text">AI company acquisitions, mergers, major funding rounds, startup investments, executive appointments, regulatory actions, legal cases, antitrust investigations, and significant business deals involving artificial intelligence companies.</p>
+        </div>
+      </div>
+      <div class="vector-block">
+        <div class="vector-rule" style="background:var(--bar-noise)"></div>
+        <div>
+          <div class="vector-label">Negative Filter Vector</div>
+          <p class="vector-text">Generic corporate PR, marketing-heavy announcements, AI-washing, chatbot integration into old products, beginner tutorials, how-to guides, prompt engineering tips, listicles like Top 10 AI tools, daily stock market price movements, seed funding under $10M, and speculative philosophical op-eds without current real-world events.</p>
+        </div>
+      </div>
+    </div>
+
+    <footer class="report-footer">
+      <span class="footer-brand">An agentic pipeline experiment by ThiruCoding</span>
+      <span>All rights reserved · 2026</span>
+    </footer>
+
+  </div><!-- /page -->
+
+  <script>
+  // ── Data ─────────────────────────────────────────────────────────────────
+  const CONSTELLATION      = [{"title": "Wary of U.S., Carney Bets on AI Strategy for Canada", "source": "NYT_TECH", "tech": 0.2761000096797943, "biz": 0.2761000096797943, "noise": 0.11949999630451202, "priority": 0.3312999904155731, "tier": "B", "selected": false}, {"title": "What Are A.I. Agents Actually Doing?", "source": "NYT_TECH", "tech": 0.37529999017715454, "biz": 0.37529999017715454, "noise": 0.29820001125335693, "priority": 0.4503999948501587, "tier": "B", "selected": false}, {"title": "The Small-Business Owners Managing Whole Armies of A.I. Employees", "source": "NYT_TECH", "tech": 0.25380000472068787, "biz": 0.25380000472068787, "noise": 0.2526000142097473, "priority": 0.3046000003814697, "tier": "B", "selected": false}, {"title": "European Union Outlines Plan to Reduce Dependence on American Tech", "source": "NYT_TECH", "tech": 0.30570000410079956, "biz": 0.30570000410079956, "noise": 0.2214999943971634, "priority": 0.3668000102043152, "tier": "B", "selected": false}, {"title": "Scientists Find Way to Supercharge Dangerous Computer \u2018Worms\u2019 With A.I.", "source": "NYT_TECH", "tech": 0.2953000068664551, "biz": 0.2953000068664551, "noise": 0.2085999995470047, "priority": 0.35440000891685486, "tier": "B", "selected": false}, {"title": "Trump Signs Executive Order Seeking Oversight of A.I. Models", "source": "NYT_TECH", "tech": 0.3102000057697296, "biz": 0.3102000057697296, "noise": 0.08649999648332596, "priority": 0.37220001220703125, "tier": "B", "selected": false}, {"title": "Is A.I. Replacing Tech Workers or Providing an Excuse for Job Cuts?", "source": "NYT_TECH", "tech": 0.2522999942302704, "biz": 0.2522999942302704, "noise": 0.14830000698566437, "priority": 0.3027999997138977, "tier": "B", "selected": false}, {"title": "How Box Created 13 New Types of Jobs Because of A.I.", "source": "NYT_TECH", "tech": 0.3612000048160553, "biz": 0.3612000048160553, "noise": 0.33489999175071716, "priority": 0.4334000051021576, "tier": "B", "selected": false}, {"title": "Nvidia Has a Plan to Put Its Chips in Personal Computers", "source": "NYT_TECH", "tech": 0.33009999990463257, "biz": 0.33009999990463257, "noise": 0.06939999759197235, "priority": 0.3961000144481659, "tier": "B", "selected": false}, {"title": "OpenAI and Anthropic Sign Letter to Prevent AI-Developed Biological Weapons", "source": "WIRED_SCIENCE", "tech": 0.31439998745918274, "biz": 0.31439998745918274, "noise": 0.27410000562667847, "priority": 0.3772999942302704, "tier": "B", "selected": false}, {"title": "These Ebola Researchers Are Stuck in US Due to Trump\u2019s Funding Cuts", "source": "WIRED_SCIENCE", "tech": 0.26570001244544983, "biz": 0.26570001244544983, "noise": 0.15489999949932098, "priority": 0.3188000023365021, "tier": "B", "selected": false}, {"title": "\"We pissed off a lot of people\": Giant data center plan cut 50% amid protests", "source": "ARS_TECHNICA", "tech": 0.2231999933719635, "biz": 0.2231999933719635, "noise": 0.20100000500679016, "priority": 0.3125, "tier": "A", "selected": false}, {"title": "Not the next R8? Audi reveals mid-engined plug-in hybrid V8 Nuvolari.", "source": "ARS_TECHNICA", "tech": 0.23510000109672546, "biz": 0.23510000109672546, "noise": 0.131400004029274, "priority": 0.32910001277923584, "tier": "A", "selected": false}, {"title": "What to expect from WWDC 2026: Siri\u2019s highly anticipated revamp and Apple Intell", "source": "TECHCRUNCH_AI", "tech": 0.3490999937057495, "biz": 0.3490999937057495, "noise": 0.2816999852657318, "priority": 0.4189000129699707, "tier": "B", "selected": false}, {"title": "The Trump administration might take an equity stake in OpenAI", "source": "TECHCRUNCH_AI", "tech": 0.3716999888420105, "biz": 0.3716999888420105, "noise": 0.33009999990463257, "priority": 0.44600000977516174, "tier": "B", "selected": false}, {"title": "Google will pay SpaceX $920M per month for compute", "source": "TECHCRUNCH_AI", "tech": 0.2728999853134155, "biz": 0.2728999853134155, "noise": 0.24070000648498535, "priority": 0.32749998569488525, "tier": "B", "selected": false}, {"title": "The token bill comes due: Inside the industry scramble to manage AI\u2019s runaway co", "source": "TECHCRUNCH_AI", "tech": 0.5950000286102295, "biz": 0.5950000286102295, "noise": 0.44609999656677246, "priority": 0.7139999866485596, "tier": "B", "selected": true}, {"title": "AirTrunk commits $30B to build 5GW of AI data centers in India", "source": "TECHCRUNCH_AI", "tech": 0.29170000553131104, "biz": 0.29170000553131104, "noise": 0.20900000631809235, "priority": 0.3499999940395355, "tier": "B", "selected": false}, {"title": "Ahead of its IPO, Anthropic\u2019s Daniela Amodei shrugs off doubts about AI\u2019s return", "source": "TECHCRUNCH_AI", "tech": 0.3801000118255615, "biz": 0.3801000118255615, "noise": 0.3077000081539154, "priority": 0.4560999870300293, "tier": "B", "selected": false}, {"title": "Meta steals a tactic from Tesla and builds data centers in tents", "source": "TECHCRUNCH_AI", "tech": 0.22699999809265137, "biz": 0.22699999809265137, "noise": 0.1851000040769577, "priority": 0.27239999175071716, "tier": "B", "selected": false}, {"title": "Apple approves Poke as the first AI agent on its Messages for Business platform", "source": "TECHCRUNCH_AI", "tech": 0.4262000024318695, "biz": 0.4262000024318695, "noise": 0.35120001435279846, "priority": 0.5113999843597412, "tier": "B", "selected": false}, {"title": "Meta rolls out a new AI creator assistant on Facebook", "source": "TECHCRUNCH_AI", "tech": 0.3450999855995178, "biz": 0.3450999855995178, "noise": 0.2870999872684479, "priority": 0.4140999913215637, "tier": "B", "selected": false}, {"title": "Is Silicon Valley ready to put robots in people\u2019s homes? Hello Robot is.", "source": "TECHCRUNCH_AI", "tech": 0.3573000133037567, "biz": 0.3573000133037567, "noise": 0.3188000023365021, "priority": 0.42879998683929443, "tier": "B", "selected": false}, {"title": "Apple touts $1.4 trillion in App Store billings and sales, 90% without a commiss", "source": "TECHCRUNCH_AI", "tech": 0.22179999947547913, "biz": 0.22179999947547913, "noise": 0.17419999837875366, "priority": 0.2662000060081482, "tier": "B", "selected": false}, {"title": "Google just redesigned the search box for the first time in 25 years \u2014 here\u2019s wh", "source": "VENTUREBEAT_AI", "tech": 0.22470000386238098, "biz": 0.22470000386238098, "noise": 0.17669999599456787, "priority": 0.2696000039577484, "tier": "B", "selected": false}, {"title": "Railway secures $100 million to challenge AWS with AI-native cloud infrastructur", "source": "VENTUREBEAT_AI", "tech": 0.36500000953674316, "biz": 0.36500000953674316, "noise": 0.27790001034736633, "priority": 0.43799999356269836, "tier": "B", "selected": false}, {"title": "Salesforce rolls out new Slackbot AI agent as it battles Microsoft and Google in", "source": "VENTUREBEAT_AI", "tech": 0.41999998688697815, "biz": 0.41999998688697815, "noise": 0.35249999165534973, "priority": 0.5040000081062317, "tier": "B", "selected": false}, {"title": "Nous Research's NousCoder-14B is an open-source coding model landing right in th", "source": "VENTUREBEAT_AI", "tech": 0.2971999943256378, "biz": 0.2971999943256378, "noise": 0.24130000174045563, "priority": 0.35659998655319214, "tier": "B", "selected": false}, {"title": "The 7 coolest gadgets I saw at Computex 2026 (and when you can buy each one)", "source": "ZDNET_AI", "tech": 0.28040000796318054, "biz": 0.28040000796318054, "noise": 0.2646999955177307, "priority": 0.28040000796318054, "tier": "C", "selected": false}, {"title": "Sakana AI bets AI that improves itself can break the compute arms race of fronti", "source": "THE_DECODER", "tech": 0.477400004863739, "biz": 0.477400004863739, "noise": 0.34150001406669617, "priority": 0.66839998960495, "tier": "A", "selected": true}, {"title": "Meta's Hatch AI agent could cost up to $200 a month and marks its first paid AI ", "source": "THE_DECODER", "tech": 0.41530001163482666, "biz": 0.41530001163482666, "noise": 0.3727000057697296, "priority": 0.5813999772071838, "tier": "A", "selected": false}, {"title": "Elon Musk's xAI reportedly trained its coding models on Claude outputs for month", "source": "THE_DECODER", "tech": 0.31459999084472656, "biz": 0.31459999084472656, "noise": 0.16769999265670776, "priority": 0.44040000438690186, "tier": "A", "selected": false}, {"title": "New open-source voice model listens nonstop and decides every 0.4 seconds whethe", "source": "THE_DECODER", "tech": 0.2290000021457672, "biz": 0.2290000021457672, "noise": 0.17890000343322754, "priority": 0.3206000030040741, "tier": "A", "selected": false}, {"title": "SpaceX signs $920 million per month deal with Google for 110,000 Nvidia AI chips", "source": "THE_DECODER", "tech": 0.35600000619888306, "biz": 0.35600000619888306, "noise": 0.3109999895095825, "priority": 0.4984000027179718, "tier": "A", "selected": false}, {"title": "OpenAI and the Trump administration are negotiating a government stake in the AI", "source": "THE_DECODER", "tech": 0.5464000105857849, "biz": 0.5464000105857849, "noise": 0.4300000071525574, "priority": 0.7649999856948853, "tier": "A", "selected": true}, {"title": "What does Washington\u2019s latest AI chip guidance mean for Chinese tech firms?", "source": "SCMP_TECH", "tech": 0.4724000096321106, "biz": 0.4724000096321106, "noise": 0.328900009393692, "priority": 0.5669000148773193, "tier": "B", "selected": false}, {"title": "China launches space computing hub as SpaceX gears up for historic IPO", "source": "SCMP_TECH", "tech": 0.25290000438690186, "biz": 0.25290000438690186, "noise": 0.21050000190734863, "priority": 0.3034999966621399, "tier": "B", "selected": false}, {"title": "Chinese researchers claim breakthrough in training household robots with AI-gene", "source": "SCMP_TECH", "tech": 0.3564000129699707, "biz": 0.3564000129699707, "noise": 0.25540000200271606, "priority": 0.427700012922287, "tier": "B", "selected": false}, {"title": "Huawei chips refine DeepSeek model in major leap for China\u2019s AI self-reliance", "source": "SCMP_TECH", "tech": 0.3765000104904175, "biz": 0.3765000104904175, "noise": 0.18709999322891235, "priority": 0.45179998874664307, "tier": "B", "selected": false}, {"title": "Tencent\u2019s chief AI scientist dismisses lag concerns, says race a \u2018long-term game", "source": "SCMP_TECH", "tech": 0.3571000099182129, "biz": 0.3571000099182129, "noise": 0.2281000018119812, "priority": 0.4284999966621399, "tier": "B", "selected": false}, {"title": "AI hyperscaler effect vaults China\u2019s Zhongji Innolight to top of CSI 300 benchma", "source": "SCMP_TECH", "tech": 0.2556000053882599, "biz": 0.2556000053882599, "noise": 0.1518000066280365, "priority": 0.3066999912261963, "tier": "B", "selected": false}, {"title": "\u2018Not afraid\u2019: TSMC brushes off mainland chip rivals amid AI boom", "source": "SCMP_TECH", "tech": 0.28540000319480896, "biz": 0.28540000319480896, "noise": 0.2556000053882599, "priority": 0.3425000011920929, "tier": "B", "selected": false}, {"title": "More US firms turn to China\u2019s DeepSeek over pricey Silicon Valley AI", "source": "SCMP_TECH", "tech": 0.5364000201225281, "biz": 0.5364000201225281, "noise": 0.3361000120639801, "priority": 0.6437000036239624, "tier": "B", "selected": false}, {"title": "A Chinese robotics start-up beat Nvidia on a global AI ranking. Is a new tech wa", "source": "SCMP_TECH", "tech": 0.4075999855995178, "biz": 0.4075999855995178, "noise": 0.2662999927997589, "priority": 0.48910000920295715, "tier": "B", "selected": false}, {"title": "Hong Kong launches DeepSeek-based AI model designed to run on domestic chips", "source": "SCMP_TECH", "tech": 0.5640000104904175, "biz": 0.5640000104904175, "noise": 0.2703000009059906, "priority": 0.676800012588501, "tier": "B", "selected": true}, {"title": "Trump signs looser AI order amid China competition concerns", "source": "SCMP_TECH", "tech": 0.4352000057697296, "biz": 0.4352000057697296, "noise": 0.19120000302791595, "priority": 0.5221999883651733, "tier": "B", "selected": false}, {"title": "Will China pay for AI? ByteDance\u2019s Doubao loses 6 million users after subscripti", "source": "SCMP_TECH", "tech": 0.3894999921321869, "biz": 0.3894999921321869, "noise": 0.3303000032901764, "priority": 0.4674000144004822, "tier": "B", "selected": false}, {"title": "US$1b windfall: how Meituan\u2019s bets on AI, robotics outshine quarterly loss", "source": "SCMP_TECH", "tech": 0.47029998898506165, "biz": 0.47029998898506165, "noise": 0.37470000982284546, "priority": 0.5644000172615051, "tier": "B", "selected": false}, {"title": "Alibaba elevates tech chief Wu Zeming to elite committee as AI push ramps up", "source": "SCMP_TECH", "tech": 0.31790000200271606, "biz": 0.31790000200271606, "noise": 0.28110000491142273, "priority": 0.3815000057220459, "tier": "B", "selected": false}, {"title": "Why Hong Kong is now the launch pad for mainland China\u2019s AI champions", "source": "SCMP_TECH", "tech": 0.3386000096797943, "biz": 0.3386000096797943, "noise": 0.2345000058412552, "priority": 0.40630000829696655, "tier": "B", "selected": false}, {"title": "ByteDance loses key AI research leader behind Seed models amid monetisation push", "source": "SCMP_TECH", "tech": 0.3222000002861023, "biz": 0.3222000002861023, "noise": 0.32089999318122864, "priority": 0.38659998774528503, "tier": "B", "selected": false}, {"title": "China\u2019s new outbound investment rules", "source": "SCMP_TECH", "tech": 0.24120000004768372, "biz": 0.24120000004768372, "noise": 0.08330000191926956, "priority": 0.28940001130104065, "tier": "B", "selected": false}, {"title": "Tencent shares jump 10% on expectations of AI agent within WeChat super app", "source": "SCMP_TECH", "tech": 0.3472000062465668, "biz": 0.3472000062465668, "noise": 0.32899999618530273, "priority": 0.41659998893737793, "tier": "B", "selected": false}, {"title": "Fear of missing out: why Asia-Pacific firms pour money into AI despite scant ret", "source": "SCMP_TECH", "tech": 0.5437999963760376, "biz": 0.5437999963760376, "noise": 0.3425999879837036, "priority": 0.6525999903678894, "tier": "B", "selected": true}, {"title": "China index reshuffle to entrench tech trades and boost AI rally: brokerages", "source": "SCMP_TECH", "tech": 0.36899998784065247, "biz": 0.36899998784065247, "noise": 0.2921999990940094, "priority": 0.44279998540878296, "tier": "B", "selected": false}, {"title": "MiniMax debuts AI model built for long and complex coding tasks", "source": "SCMP_TECH", "tech": 0.46799999475479126, "biz": 0.46799999475479126, "noise": 0.3041999936103821, "priority": 0.5616000294685364, "tier": "B", "selected": false}, {"title": "Hong Kong government\u2019s venture fund eyes bigger bankroll after double-digit retu", "source": "SCMP_TECH", "tech": 0.24420000612735748, "biz": 0.24420000612735748, "noise": 0.15950000286102295, "priority": 0.2930000126361847, "tier": "B", "selected": false}, {"title": "Nvidia, Unitree and Sharpa unite to design humanoid robot that can perform \u2018real", "source": "SCMP_TECH", "tech": 0.2572000026702881, "biz": 0.2572000026702881, "noise": 0.12530000507831573, "priority": 0.3086000084877014, "tier": "B", "selected": false}, {"title": "Beyond Nvidia: how US export curbs are forcing China to redesign its AI chip ind", "source": "SCMP_TECH", "tech": 0.41339999437332153, "biz": 0.41339999437332153, "noise": 0.2906999886035919, "priority": 0.4961000084877014, "tier": "B", "selected": false}, {"title": "Chinese EV makers shift focus from price wars to AI capability: Morgan Stanley", "source": "SCMP_TECH", "tech": 0.40869998931884766, "biz": 0.40869998931884766, "noise": 0.37700000405311584, "priority": 0.4903999865055084, "tier": "B", "selected": false}, {"title": "US takes step to halt Nvidia AI chip shipments to Chinese overseas subsidiaries", "source": "SCMP_TECH", "tech": 0.24979999661445618, "biz": 0.24979999661445618, "noise": 0.08410000056028366, "priority": 0.29980000853538513, "tier": "B", "selected": false}, {"title": "AI firm MiniMax prepares for mainland China listing after shares surge in Hong K", "source": "SCMP_TECH", "tech": 0.3601999878883362, "biz": 0.3601999878883362, "noise": 0.23690000176429749, "priority": 0.43220001459121704, "tier": "B", "selected": false}, {"title": "How a decade-long bet on photonics handed this Chinese venture capital firm an A", "source": "SCMP_TECH", "tech": 0.44209998846054077, "biz": 0.44209998846054077, "noise": 0.3693000078201294, "priority": 0.5304999947547913, "tier": "B", "selected": false}, {"title": "Unicorn born in record time amid \u2018arms race\u2019 among China\u2019s robotic hand develope", "source": "SCMP_TECH", "tech": 0.2522999942302704, "biz": 0.2522999942302704, "noise": 0.22450000047683716, "priority": 0.3027999997138977, "tier": "B", "selected": false}, {"title": "Is Huawei\u2019s new chip scaling law a true breakthrough, or mere hype?", "source": "SCMP_TECH", "tech": 0.2529999911785126, "biz": 0.2529999911785126, "noise": 0.1046999990940094, "priority": 0.303600013256073, "tier": "B", "selected": false}, {"title": "Alibaba AI voice model cracks top 5 globally, outperforming US rivals in regiona", "source": "SCMP_TECH", "tech": 0.2653000056743622, "biz": 0.2653000056743622, "noise": 0.20020000636577606, "priority": 0.31839999556541443, "tier": "B", "selected": false}, {"title": "Hong Kong Police and Cyberport join forces to launch AI lab against sophisticate", "source": "SCMP_TECH", "tech": 0.4562999904155731, "biz": 0.4562999904155731, "noise": 0.30709999799728394, "priority": 0.5475999712944031, "tier": "B", "selected": false}, {"title": "\u2018A driver of political violence\u2019: how the breakneck AI boom is fueling anti-tech", "source": "GUARDIAN_AI", "tech": 0.36899998784065247, "biz": 0.36899998784065247, "noise": 0.28600001335144043, "priority": 0.44279998540878296, "tier": "B", "selected": false}, {"title": "It\u2019s no surprise that an AI-faked presidential speech condemning foreign exploit", "source": "GUARDIAN_AI", "tech": 0.29919999837875366, "biz": 0.29919999837875366, "noise": 0.21850000321865082, "priority": 0.35899999737739563, "tier": "B", "selected": false}, {"title": "Labour will make AI \u2018work for the workers\u2019, says Liz Kendall", "source": "GUARDIAN_AI", "tech": 0.3513999879360199, "biz": 0.3513999879360199, "noise": 0.2662000060081482, "priority": 0.42170000076293945, "tier": "B", "selected": false}, {"title": "Fifa expanding AI use at World Cup to reduce amount of abuse seen by players", "source": "GUARDIAN_AI", "tech": 0.2816999852657318, "biz": 0.2816999852657318, "noise": 0.1386999934911728, "priority": 0.33799999952316284, "tier": "B", "selected": false}, {"title": "Anthropic says the world should have option to \u2018pause\u2019 on AI", "source": "GUARDIAN_AI", "tech": 0.31369999051094055, "biz": 0.31369999051094055, "noise": 0.28529998660087585, "priority": 0.3763999938964844, "tier": "B", "selected": false}, {"title": "A uni professor admitted using AI to write an opinion piece. Here\u2019s what it reve", "source": "GUARDIAN_AI", "tech": 0.44429999589920044, "biz": 0.44429999589920044, "noise": 0.36079999804496765, "priority": 0.5332000255584717, "tier": "B", "selected": false}, {"title": "My year with the robots: how Joanna Stern let AI into her home, work \u2013 and heart", "source": "GUARDIAN_AI", "tech": 0.3382999897003174, "biz": 0.3382999897003174, "noise": 0.3343000113964081, "priority": 0.4059999883174896, "tier": "B", "selected": false}, {"title": "Satya Nadella \u2018Not Sure\u2019 Who Said Microsoft Wanted to Make Addictive AI, Is Look", "source": "404_MEDIA", "tech": 0.3749000132083893, "biz": 0.3749000132083893, "noise": 0.32409998774528503, "priority": 0.4499000012874603, "tier": "B", "selected": false}, {"title": "Google Employees Internally Share Memes About How Its AI Sucks", "source": "404_MEDIA", "tech": 0.4000999927520752, "biz": 0.4000999927520752, "noise": 0.3483999967575073, "priority": 0.48010000586509705, "tier": "B", "selected": false}, {"title": "Podcast: Hackers Asked Meta AI To Let Them In. It Worked", "source": "404_MEDIA", "tech": 0.3522000014781952, "biz": 0.3522000014781952, "noise": 0.34290000796318054, "priority": 0.42260000109672546, "tier": "B", "selected": false}, {"title": "Google Is Quietly Buying Code From Play Store Developers to Train AI", "source": "404_MEDIA", "tech": 0.4449999928474426, "biz": 0.4449999928474426, "noise": 0.3434000015258789, "priority": 0.5339999794960022, "tier": "B", "selected": false}, {"title": "Microsoft Wants to 'Make People Addicted' to its New AI Assistant, Internal Docu", "source": "404_MEDIA", "tech": 0.39590001106262207, "biz": 0.39590001106262207, "noise": 0.32339999079704285, "priority": 0.47510001063346863, "tier": "B", "selected": false}, {"title": "AI customer service is not ready for prime time", "source": "SEMAFOR_TECH", "tech": 0.41119998693466187, "biz": 0.41119998693466187, "noise": 0.36399999260902405, "priority": 0.4934000074863434, "tier": "B", "selected": false}, {"title": "Companies struggle to measure AI's ROI", "source": "SEMAFOR_TECH", "tech": 0.5694000124931335, "biz": 0.5694000124931335, "noise": 0.3700999915599823, "priority": 0.6833000183105469, "tier": "B", "selected": false}, {"title": "Anthropic calls for AI development slowdown to ensure safety", "source": "SEMAFOR_TECH", "tech": 0.42309999465942383, "biz": 0.42309999465942383, "noise": 0.34389999508857727, "priority": 0.5077000260353088, "tier": "B", "selected": false}, {"title": "Democrats ramp up plans to investigate Trump through corporate America", "source": "SEMAFOR_TECH", "tech": 0.40880000591278076, "biz": 0.40880000591278076, "noise": 0.2363000065088272, "priority": 0.49059998989105225, "tier": "B", "selected": false}, {"title": "Washington weighs new bipartisan AI proposal", "source": "SEMAFOR_TECH", "tech": 0.3767000138759613, "biz": 0.3767000138759613, "noise": 0.22519999742507935, "priority": 0.4519999921321869, "tier": "B", "selected": false}, {"title": "The \u2018Jensen effect\u2019 is the new \u2018Trump bump\u2019 for stocks", "source": "SEMAFOR_TECH", "tech": 0.3314000070095062, "biz": 0.3314000070095062, "noise": 0.27250000834465027, "priority": 0.3977000117301941, "tier": "B", "selected": false}, {"title": "Intelligence alliance warns of China's spy recruiting efforts", "source": "SEMAFOR_TECH", "tech": 0.22439999878406525, "biz": 0.22439999878406525, "noise": 0.16529999673366547, "priority": 0.26930001378059387, "tier": "B", "selected": false}, {"title": "AI executives make rare collective warning on bioweapons threat", "source": "SEMAFOR_TECH", "tech": 0.3612000048160553, "biz": 0.3612000048160553, "noise": 0.3066999912261963, "priority": 0.4334000051021576, "tier": "B", "selected": false}, {"title": "China has a growing role in US tech discourse", "source": "SEMAFOR_TECH", "tech": 0.2700999975204468, "biz": 0.2700999975204468, "noise": 0.26429998874664307, "priority": 0.32409998774528503, "tier": "B", "selected": false}, {"title": "AI lobbying intensifies around unlikely deal", "source": "SEMAFOR_TECH", "tech": 0.5824999809265137, "biz": 0.5824999809265137, "noise": 0.3887999951839447, "priority": 0.6990000009536743, "tier": "B", "selected": true}, {"title": "US senator proposes AI wealth fund", "source": "SEMAFOR_TECH", "tech": 0.38040000200271606, "biz": 0.38040000200271606, "noise": 0.28850001096725464, "priority": 0.45649999380111694, "tier": "B", "selected": false}, {"title": "Trump makes new play for tariffs", "source": "SEMAFOR_TECH", "tech": 0.23639999330043793, "biz": 0.23639999330043793, "noise": 0.06549999862909317, "priority": 0.28369998931884766, "tier": "B", "selected": false}, {"title": "AI is evolving past hardware", "source": "SEMAFOR_TECH", "tech": 0.5289000272750854, "biz": 0.5289000272750854, "noise": 0.2939000129699707, "priority": 0.6347000002861023, "tier": "B", "selected": false}, {"title": "Microsoft launches AI assistant powered by OpenClaw", "source": "SEMAFOR_TECH", "tech": 0.4050000011920929, "biz": 0.4050000011920929, "noise": 0.32519999146461487, "priority": 0.4860000014305115, "tier": "B", "selected": false}, {"title": "AI token costs are exceeding some employees\u2019 salaries", "source": "SEMAFOR_TECH", "tech": 0.4490000009536743, "biz": 0.4490000009536743, "noise": 0.3330000042915344, "priority": 0.5388000011444092, "tier": "B", "selected": false}, {"title": "Tech companies bet on PC comeback", "source": "SEMAFOR_TECH", "tech": 0.2524999976158142, "biz": 0.2524999976158142, "noise": 0.24740000069141388, "priority": 0.30300000309944153, "tier": "B", "selected": false}, {"title": "AI revolution boosts work for philosophers", "source": "SEMAFOR_TECH", "tech": 0.4602999985218048, "biz": 0.4602999985218048, "noise": 0.36500000953674316, "priority": 0.5523999929428101, "tier": "B", "selected": false}, {"title": "Abu Dhabi doubles down on French AI with fresh deals", "source": "SEMAFOR_TECH", "tech": 0.26579999923706055, "biz": 0.26579999923706055, "noise": 0.16619999706745148, "priority": 0.3190000057220459, "tier": "B", "selected": false}, {"title": "Sanders follows Trump toward government stakes in private firms", "source": "SEMAFOR_TECH", "tech": 0.3188999891281128, "biz": 0.3188999891281128, "noise": 0.2151000052690506, "priority": 0.38269999623298645, "tier": "B", "selected": false}, {"title": "Chinese super-app could get an AI agent", "source": "SEMAFOR_TECH", "tech": 0.37779998779296875, "biz": 0.37779998779296875, "noise": 0.3156000077724457, "priority": 0.45339998602867126, "tier": "B", "selected": false}, {"title": "US stocks increasingly rest on AI pillar", "source": "SEMAFOR_TECH", "tech": 0.3264000117778778, "biz": 0.3264000117778778, "noise": 0.21739999949932098, "priority": 0.39169999957084656, "tier": "B", "selected": false}, {"title": "Trump signs AI order after delay", "source": "SEMAFOR_TECH", "tech": 0.38089999556541443, "biz": 0.38089999556541443, "noise": 0.1875, "priority": 0.4571000039577484, "tier": "B", "selected": false}, {"title": "Blanche announces end of Trump\u2019s $1.8 billion \u2018anti-weaponization\u2019 fund", "source": "SEMAFOR_TECH", "tech": 0.2639000117778778, "biz": 0.2639000117778778, "noise": 0.09260000288486481, "priority": 0.3167000114917755, "tier": "B", "selected": false}, {"title": "Microsoft\u2019s AI chief on the greatest game of catchup ever played", "source": "SEMAFOR_TECH", "tech": 0.391400009393692, "biz": 0.391400009393692, "noise": 0.2964000105857849, "priority": 0.46970000863075256, "tier": "B", "selected": false}, {"title": "Berkshire to invest $10 billion in Alphabet in major AI bet", "source": "SEMAFOR_TECH", "tech": 0.45820000767707825, "biz": 0.45820000767707825, "noise": 0.399399995803833, "priority": 0.5497999787330627, "tier": "B", "selected": false}, {"title": "Roger Stone helped Trump choose an unorthodox new intel adviser", "source": "SEMAFOR_TECH", "tech": 0.32030001282691956, "biz": 0.32030001282691956, "noise": 0.21140000224113464, "priority": 0.38440001010894775, "tier": "B", "selected": false}, {"title": "China tightens rules on outbound investment", "source": "SEMAFOR_TECH", "tech": 0.24240000545978546, "biz": 0.24240000545978546, "noise": 0.066600002348423, "priority": 0.29089999198913574, "tier": "B", "selected": false}, {"title": "How Anthony Pompliano thinks AI will turbocharge the independent investor", "source": "SEMAFOR_TECH", "tech": 0.37209999561309814, "biz": 0.37209999561309814, "noise": 0.288100004196167, "priority": 0.4465000033378601, "tier": "B", "selected": false}, {"title": "AI weather startup outperforms official forecasts", "source": "SEMAFOR_TECH", "tech": 0.3400000035762787, "biz": 0.3400000035762787, "noise": 0.32010000944137573, "priority": 0.40799999237060547, "tier": "B", "selected": false}, {"title": "Alphabet to sell $80 billion in stock to fund AI buildout", "source": "SEMAFOR_TECH", "tech": 0.46470001339912415, "biz": 0.46470001339912415, "noise": 0.43130001425743103, "priority": 0.5576000213623047, "tier": "B", "selected": false}, {"title": "China's biotech boom alarms Western lawmakers, investors", "source": "SEMAFOR_TECH", "tech": 0.3472000062465668, "biz": 0.3472000062465668, "noise": 0.295199990272522, "priority": 0.41659998893737793, "tier": "B", "selected": false}, {"title": "Lawmakers push new foreign disclosure rules in defense contracting", "source": "SEMAFOR_TECH", "tech": 0.273499995470047, "biz": 0.273499995470047, "noise": 0.17720000445842743, "priority": 0.32820001244544983, "tier": "B", "selected": false}, {"title": "Anthropic files to go public as AI startups race to hit markets", "source": "SEMAFOR_TECH", "tech": 0.4341999888420105, "biz": 0.4341999888420105, "noise": 0.4332999885082245, "priority": 0.5210000276565552, "tier": "B", "selected": false}, {"title": "Nvidia unveils new \u2018superchip\u2019 for AI-driven home computing", "source": "SEMAFOR_TECH", "tech": 0.5157999992370605, "biz": 0.5157999992370605, "noise": 0.15940000116825104, "priority": 0.6190000176429749, "tier": "B", "selected": false}, {"title": "Militaries mull the use of AI in war", "source": "SEMAFOR_TECH", "tech": 0.40939998626708984, "biz": 0.40939998626708984, "noise": 0.26100000739097595, "priority": 0.49129998683929443, "tier": "B", "selected": false}, {"title": "Mustafa Suleyman's case against open-source AI shortcuts", "source": "SEMAFOR_TECH", "tech": 0.43070000410079956, "biz": 0.43070000410079956, "noise": 0.37779998779296875, "priority": 0.5167999863624573, "tier": "B", "selected": false}, {"title": "How AI is making assistance for the visually impaired more accessible", "source": "SEMAFOR_TECH", "tech": 0.37130001187324524, "biz": 0.37130001187324524, "noise": 0.18060000240802765, "priority": 0.4456000030040741, "tier": "B", "selected": false}, {"title": "AI startup offers free home cleaning to train robots", "source": "SEMAFOR_TECH", "tech": 0.3833000063896179, "biz": 0.3833000063896179, "noise": 0.3634999990463257, "priority": 0.46000000834465027, "tier": "B", "selected": false}, {"title": "Physicists make quantum mechanics breakthrough", "source": "SEMAFOR_TECH", "tech": 0.2574999928474426, "biz": 0.2574999928474426, "noise": 0.2152000069618225, "priority": 0.3089999854564667, "tier": "B", "selected": false}, {"title": "Companies evaluate aggressive AI spending as costs pile up", "source": "SEMAFOR_TECH", "tech": 0.6003999710083008, "biz": 0.6003999710083008, "noise": 0.42410001158714294, "priority": 0.7204999923706055, "tier": "B", "selected": true}, {"title": "China, India show varying economic impact of AI development", "source": "SEMAFOR_TECH", "tech": 0.5275999903678894, "biz": 0.5275999903678894, "noise": 0.30059999227523804, "priority": 0.6330999732017517, "tier": "B", "selected": false}, {"title": "Trump: U.S. stake in AI giants \"could be a beautiful thing\"", "source": "AXIOS_AI", "tech": 0.43880000710487366, "biz": 0.43880000710487366, "noise": 0.2818000018596649, "priority": 0.5266000032424927, "tier": "B", "selected": false}, {"title": "Revenge of the AI bubble", "source": "AXIOS_AI", "tech": 0.35569998621940613, "biz": 0.35569998621940613, "noise": 0.34529998898506165, "priority": 0.426800012588501, "tier": "B", "selected": false}, {"title": "Innovation in medicine is having a breakthrough moment", "source": "AXIOS_AI", "tech": 0.2946000099182129, "biz": 0.2946000099182129, "noise": 0.2597000002861023, "priority": 0.35350000858306885, "tier": "B", "selected": false}, {"title": "China fueling U.S. data center resistance, AI groups claim", "source": "AXIOS_AI", "tech": 0.32739999890327454, "biz": 0.32739999890327454, "noise": 0.2363000065088272, "priority": 0.3928999900817871, "tier": "B", "selected": false}, {"title": "Anthropic warns AI could soon help build its own successors", "source": "AXIOS_AI", "tech": 0.39489999413490295, "biz": 0.39489999413490295, "noise": 0.36149999499320984, "priority": 0.4738999903202057, "tier": "B", "selected": false}, {"title": "AI is ushering in a new era of colonialism", "source": "AXIOS_AI", "tech": 0.47609999775886536, "biz": 0.47609999775886536, "noise": 0.3544999957084656, "priority": 0.5713000297546387, "tier": "B", "selected": false}, {"title": "Google pushes water standards amid data center backlash", "source": "AXIOS_AI", "tech": 0.2206999957561493, "biz": 0.2206999957561493, "noise": 0.1444000005722046, "priority": 0.2648000121116638, "tier": "B", "selected": false}, {"title": "Trump loyalist Pulte gets oversight of vast U.S. intel", "source": "AXIOS_AI", "tech": 0.33660000562667847, "biz": 0.33660000562667847, "noise": 0.15809999406337738, "priority": 0.40389999747276306, "tier": "B", "selected": false}, {"title": "Trump dodges AI rules for now with latest executive order", "source": "AXIOS_AI", "tech": 0.4700999855995178, "biz": 0.4700999855995178, "noise": 0.22609999775886536, "priority": 0.5641000270843506, "tier": "B", "selected": false}, {"title": "Anthropic faces AI spending backlash before IPO", "source": "AXIOS_AI", "tech": 0.4203000068664551, "biz": 0.4203000068664551, "noise": 0.3804999887943268, "priority": 0.5044000148773193, "tier": "B", "selected": false}, {"title": "Alphabet seeks $80 billion to fund AI buildout", "source": "AXIOS_AI", "tech": 0.5156999826431274, "biz": 0.5156999826431274, "noise": 0.4226999878883362, "priority": 0.6187999844551086, "tier": "B", "selected": true}, {"title": "Scoop: Trump plans to drop \"weaponization\" fund", "source": "AXIOS_AI", "tech": 0.22169999778270721, "biz": 0.22169999778270721, "noise": 0.13269999623298645, "priority": 0.26600000262260437, "tier": "B", "selected": false}, {"title": "Fed officials warn AI's economic costs may arrive faster than benefits", "source": "AXIOS_AI", "tech": 0.40849998593330383, "biz": 0.40849998593330383, "noise": 0.27079999446868896, "priority": 0.490200012922287, "tier": "B", "selected": false}, {"title": "AI ignores religion when you need it most \u2014 and takes sides when you ask about s", "source": "AXIOS_AI", "tech": 0.30230000615119934, "biz": 0.30230000615119934, "noise": 0.2298000007867813, "priority": 0.3628000020980835, "tier": "B", "selected": false}, {"title": "Nvidia's new world model helps robots navigate the world", "source": "AXIOS_AI", "tech": 0.41100001335144043, "biz": 0.41100001335144043, "noise": 0.1160999983549118, "priority": 0.49320000410079956, "tier": "B", "selected": false}, {"title": "AI is turning energy into the hottest business in America", "source": "AXIOS_AI", "tech": 0.5490000247955322, "biz": 0.5490000247955322, "noise": 0.4097999930381775, "priority": 0.6588000059127808, "tier": "B", "selected": true}, {"title": "Scoop: First Windows PCs powered by Nvidia chips to debut next week", "source": "AXIOS_AI", "tech": 0.2718999981880188, "biz": 0.2718999981880188, "noise": 0.12890000641345978, "priority": 0.3262999951839447, "tier": "B", "selected": false}, {"title": "Classrooms lean into analog learning in the AI era", "source": "AXIOS_AI", "tech": 0.335999995470047, "biz": 0.335999995470047, "noise": 0.30399999022483826, "priority": 0.4032000005245209, "tier": "B", "selected": false}, {"title": "Inside the Democratic resistance on AI", "source": "AXIOS_AI", "tech": 0.3926999866962433, "biz": 0.3926999866962433, "noise": 0.28119999170303345, "priority": 0.47119998931884766, "tier": "B", "selected": false}, {"title": "How AI, crypto and AIPAC are ending political careers", "source": "AXIOS_AI", "tech": 0.4853000044822693, "biz": 0.4853000044822693, "noise": 0.34040001034736633, "priority": 0.5824000239372253, "tier": "B", "selected": false}, {"title": "Anthropic overtakes OpenAI as the most valuable AI startup", "source": "AXIOS_AI", "tech": 0.4659999907016754, "biz": 0.4659999907016754, "noise": 0.45249998569488525, "priority": 0.5591999888420105, "tier": "B", "selected": false}, {"title": "Games Between Programs: The Ruliology of Competition", "source": "HACKER_NEWS", "tech": 0.25279998779296875, "biz": 0.25279998779296875, "noise": 0.149399995803833, "priority": 0.3538999855518341, "tier": "A", "selected": false}, {"title": "Nvidia is proposing a beast of a CPU system for Windows PCs", "source": "HACKER_NEWS", "tech": 0.28049999475479126, "biz": 0.28049999475479126, "noise": 0.02669999934732914, "priority": 0.3926999866962433, "tier": "A", "selected": false}, {"title": "Meta confirms 1000s of Instagram accounts were hacked by abusing its AI chatbot", "source": "HACKER_NEWS", "tech": 0.3305000066757202, "biz": 0.3305000066757202, "noise": 0.3158999979496002, "priority": 0.4627000093460083, "tier": "A", "selected": false}, {"title": "Google to pay SpaceX $920M a month for compute capacity at xAI data centers", "source": "HACKER_NEWS", "tech": 0.26759999990463257, "biz": 0.26759999990463257, "noise": 0.179299995303154, "priority": 0.37459999322891235, "tier": "A", "selected": false}, {"title": "Human-Like Neural Nets by Catapulting", "source": "HACKER_NEWS", "tech": 0.3181000053882599, "biz": 0.3181000053882599, "noise": 0.1776999980211258, "priority": 0.44530001282691956, "tier": "A", "selected": false}, {"title": "Dropbox Introduces Nova, an Internal Platform for Running AI Coding Agents at Sc", "source": "INFOQ_AI_ML", "tech": 0.4447000026702881, "biz": 0.4447000026702881, "noise": 0.3560999929904938, "priority": 0.5335999727249146, "tier": "B", "selected": false}, {"title": "Google LiteRT-LM Speeds up Local Inference up to 2.2x with Gemma 4 Multi-Token P", "source": "INFOQ_AI_ML", "tech": 0.28839999437332153, "biz": 0.28839999437332153, "noise": 0.11959999799728394, "priority": 0.34610000252723694, "tier": "B", "selected": false}, {"title": "Claude Code Adds Dynamic Workflows for Parallel Agent Coordination", "source": "INFOQ_AI_ML", "tech": 0.24130000174045563, "biz": 0.24130000174045563, "noise": 0.14149999618530273, "priority": 0.2896000146865845, "tier": "B", "selected": false}, {"title": "BadHost Vulnerability Exposes AI Agents, Evaluators, and LLM Gateways", "source": "INFOQ_AI_ML", "tech": 0.27720001339912415, "biz": 0.27720001339912415, "noise": 0.22220000624656677, "priority": 0.3325999975204468, "tier": "B", "selected": false}, {"title": "Arm Open-Sources Metis, an AI Security Framework Outperforming Traditional SAST ", "source": "INFOQ_AI_ML", "tech": 0.4081000089645386, "biz": 0.4081000089645386, "noise": 0.2809000015258789, "priority": 0.48969998955726624, "tier": "B", "selected": false}, {"title": "AI-Assisted Migration Tool Helps Teams Move from ingress-nginx to Higress in Min", "source": "INFOQ_AI_ML", "tech": 0.28279998898506165, "biz": 0.28279998898506165, "noise": 0.21279999613761902, "priority": 0.3393999934196472, "tier": "B", "selected": false}, {"title": "Cloudflare Adds Support for Claude Managed Agents", "source": "INFOQ_AI_ML", "tech": 0.24459999799728394, "biz": 0.24459999799728394, "noise": 0.2160000056028366, "priority": 0.29350000619888306, "tier": "B", "selected": false}, {"title": "GitLab Field CTO 'foolishly assumed' the AI winners \u2013 and they aren't who he tho", "source": "THE_STACK", "tech": 0.2653999924659729, "biz": 0.2653999924659729, "noise": 0.18889999389648438, "priority": 0.31850001215934753, "tier": "B", "selected": false}, {"title": "Linux Foundation spins up a new foundation for \u201ctokenomics\u201d", "source": "THE_STACK", "tech": 0.3127000033855438, "biz": 0.3127000033855438, "noise": 0.2930999994277954, "priority": 0.3752000033855438, "tier": "B", "selected": false}, {"title": "Microsoft's new models give it a better moat", "source": "THE_STACK", "tech": 0.33570000529289246, "biz": 0.33570000529289246, "noise": 0.20479999482631683, "priority": 0.4027999937534332, "tier": "B", "selected": false}, {"title": "The EU's latest tech sovereignty package has landed. Here's what you need to kno", "source": "THE_STACK", "tech": 0.22619999945163727, "biz": 0.22619999945163727, "noise": 0.22290000319480896, "priority": 0.27140000462532043, "tier": "B", "selected": false}, {"title": "Tokenmaxxing is dead, but finops for AI is not cut and dry", "source": "THE_STACK", "tech": 0.31439998745918274, "biz": 0.31439998745918274, "noise": 0.2167000025510788, "priority": 0.3772999942302704, "tier": "B", "selected": false}, {"title": "Alphabet is raising $80bn to balance out huge AI investments", "source": "THE_STACK", "tech": 0.5593000054359436, "biz": 0.5593000054359436, "noise": 0.4361000061035156, "priority": 0.6711999773979187, "tier": "B", "selected": true}, {"title": "Edera may be the answer to more efficient AI scheduling on Kubernetes", "source": "THE_STACK", "tech": 0.2750000059604645, "biz": 0.2750000059604645, "noise": 0.22010000050067902, "priority": 0.33000001311302185, "tier": "B", "selected": false}, {"title": "Best 21 Low-Code and No-Code AI Tools in 2026", "source": "MARKTECHPOST", "tech": 0.45660001039505005, "biz": 0.45660001039505005, "noise": 0.3991999924182892, "priority": 0.5479000210762024, "tier": "B", "selected": false}, {"title": "Meet Harness-1: A 20B Retrieval Subagent Trained With Reinforcement Learning Ins", "source": "MARKTECHPOST", "tech": 0.33160001039505005, "biz": 0.33160001039505005, "noise": 0.15559999644756317, "priority": 0.3978999853134155, "tier": "B", "selected": false}, {"title": "NVIDIA garak Tutorial: Build a Complete Defensive LLM Red-Teaming Workflow with ", "source": "MARKTECHPOST", "tech": 0.26030001044273376, "biz": 0.26030001044273376, "noise": 0.05999999865889549, "priority": 0.3124000132083893, "tier": "B", "selected": false}, {"title": "Google\u2019s New Colab CLI Lets Developers and AI Agents Run Python on Remote Colab ", "source": "MARKTECHPOST", "tech": 0.3659999966621399, "biz": 0.3659999966621399, "noise": 0.28790000081062317, "priority": 0.4392000138759613, "tier": "B", "selected": false}, {"title": "NVIDIA Releases Nemotron 3.5 ASR: A 600M-Parameter Cache-Aware Streaming Model T", "source": "MARKTECHPOST", "tech": 0.2328999936580658, "biz": 0.2328999936580658, "noise": 0.044199999421834946, "priority": 0.27950000762939453, "tier": "B", "selected": false}, {"title": "A Hands-On Coding Tutorial on Qualcomm AI Hub Models for Classification, Object ", "source": "MARKTECHPOST", "tech": 0.4562000036239624, "biz": 0.4562000036239624, "noise": 0.22750000655651093, "priority": 0.5473999977111816, "tier": "B", "selected": false}, {"title": "NVIDIA AI Releases Dynamo Snapshot: A CRIU-Based Fast Startup System for AI Infe", "source": "MARKTECHPOST", "tech": 0.4480000138282776, "biz": 0.4480000138282776, "noise": 0.20100000500679016, "priority": 0.5375999808311462, "tier": "B", "selected": false}, {"title": "Perplexity AI Introduces Hybrid Local-Server Inference Orchestrator for Personal", "source": "MARKTECHPOST", "tech": 0.3452000021934509, "biz": 0.3452000021934509, "noise": 0.15870000422000885, "priority": 0.4142000079154968, "tier": "B", "selected": false}];
+  const SOURCE_BARS        = [{"name": "NYT_TECH", "fetched": 27, "curated": 9, "tier": "B", "in_top10": false}, {"name": "WIRED_SCIENCE", "fetched": 20, "curated": 2, "tier": "B", "in_top10": false}, {"name": "ARS_TECHNICA", "fetched": 20, "curated": 2, "tier": "A", "in_top10": false}, {"name": "TECHCRUNCH_AI", "fetched": 20, "curated": 11, "tier": "B", "in_top10": true}, {"name": "THE_VERGE_AI", "fetched": 10, "curated": 0, "tier": "B", "in_top10": false}, {"name": "VENTUREBEAT_AI", "fetched": 7, "curated": 4, "tier": "B", "in_top10": false}, {"name": "ZDNET_AI", "fetched": 20, "curated": 1, "tier": "C", "in_top10": false}, {"name": "THE_DECODER", "fetched": 10, "curated": 6, "tier": "A", "in_top10": true}, {"name": "SCMP_TECH", "fetched": 50, "curated": 32, "tier": "B", "in_top10": true}, {"name": "GUARDIAN_AI", "fetched": 20, "curated": 7, "tier": "B", "in_top10": false}, {"name": "404_MEDIA", "fetched": 15, "curated": 5, "tier": "B", "in_top10": false}, {"name": "SEMAFOR_TECH", "fetched": 235, "curated": 41, "tier": "B", "in_top10": true}, {"name": "AXIOS_AI", "fetched": 100, "curated": 21, "tier": "B", "in_top10": true}, {"name": "HACKER_NEWS", "fetched": 30, "curated": 5, "tier": "A", "in_top10": false}, {"name": "INFOQ_AI_ML", "fetched": 12, "curated": 7, "tier": "B", "in_top10": false}, {"name": "THE_STACK", "fetched": 15, "curated": 7, "tier": "B", "in_top10": true}, {"name": "MARKTECHPOST", "fetched": 10, "curated": 8, "tier": "B", "in_top10": false}];
+  const CARDS              = [{"rank": 1, "title": "OpenAI and the Trump administration are negotiating a government stake in the AI startup", "source": "THE_DECODER", "domain": "the-decoder.com", "link": "https://the-decoder.com/openai-and-the-trump-administration-are-negotiating-a-government-stake-in-the-ai-startup/", "tech": 0.5464000105857849, "biz": 0.5464000105857849, "noise": 0.4300000071525574, "priority": 0.7649999856948853, "weight": 1.4}, {"rank": 2, "title": "Companies evaluate aggressive AI spending as costs pile up", "source": "SEMAFOR_TECH", "domain": "semafor.com", "link": "https://www.semafor.com/article/05/28/2026/companies-evaluate-aggressive-ai-spending-as-costs-pile-up", "tech": 0.6003999710083008, "biz": 0.6003999710083008, "noise": 0.42410001158714294, "priority": 0.7204999923706055, "weight": 1.2}, {"rank": 3, "title": "The token bill comes due: Inside the industry scramble to manage AI\u2019s runaway costs", "source": "TECHCRUNCH_AI", "domain": "techcrunch.com", "link": "https://techcrunch.com/2026/06/05/the-token-bill-comes-due-inside-the-industry-scramble-to-manage-ais-runaway-costs/", "tech": 0.5950000286102295, "biz": 0.5950000286102295, "noise": 0.44609999656677246, "priority": 0.7139999866485596, "weight": 1.2}, {"rank": 4, "title": "AI lobbying intensifies around unlikely deal", "source": "SEMAFOR_TECH", "domain": "semafor.com", "link": "https://www.semafor.com/article/06/03/2026/ai-lobbying-intensifies-around-unlikely-deal", "tech": 0.5824999809265137, "biz": 0.5824999809265137, "noise": 0.3887999951839447, "priority": 0.6990000009536743, "weight": 1.2}, {"rank": 5, "title": "Hong Kong launches DeepSeek-based AI model designed to run on domestic chips", "source": "SCMP_TECH", "domain": "scmp.com", "link": "https://www.scmp.com/tech/tech-trends/article/3355861/hong-kong-launches-deepseek-based-ai-model-designed-run-domestic-chips?utm_source=rss_feed", "tech": 0.5640000104904175, "biz": 0.5640000104904175, "noise": 0.2703000009059906, "priority": 0.676800012588501, "weight": 1.2}, {"rank": 6, "title": "Alphabet is raising $80bn to balance out huge AI investments", "source": "THE_STACK", "domain": "thestack.technology", "link": "https://www.thestack.technology/alphabet-ai-spending-raise-80-billion/", "tech": 0.5593000054359436, "biz": 0.5593000054359436, "noise": 0.4361000061035156, "priority": 0.6711999773979187, "weight": 1.2}, {"rank": 7, "title": "Sakana AI bets AI that improves itself can break the compute arms race of frontier labs", "source": "THE_DECODER", "domain": "the-decoder.com", "link": "https://the-decoder.com/sakana-ai-bets-ai-that-improves-itself-can-break-the-compute-arms-race-of-frontier-labs/", "tech": 0.477400004863739, "biz": 0.477400004863739, "noise": 0.34150001406669617, "priority": 0.66839998960495, "weight": 1.4}, {"rank": 8, "title": "AI is turning energy into the hottest business in America", "source": "AXIOS_AI", "domain": "axios.com", "link": "https://www.axios.com/2026/05/31/ai-energy-business-companies-storage-supplies", "tech": 0.5490000247955322, "biz": 0.5490000247955322, "noise": 0.4097999930381775, "priority": 0.6588000059127808, "weight": 1.2}, {"rank": 9, "title": "Fear of missing out: why Asia-Pacific firms pour money into AI despite scant returns", "source": "SCMP_TECH", "domain": "scmp.com", "link": "https://www.scmp.com/business/banking-finance/article/3355642/fear-missing-out-why-asia-pacific-firms-pour-money-ai-despite-scant-returns?utm_source=rss_feed", "tech": 0.5437999963760376, "biz": 0.5437999963760376, "noise": 0.3425999879837036, "priority": 0.6525999903678894, "weight": 1.2}, {"rank": 10, "title": "Alphabet seeks $80 billion to fund AI buildout", "source": "AXIOS_AI", "domain": "axios.com", "link": "https://www.axios.com/2026/06/01/alphabet-80-billion-ai-buildout", "tech": 0.5156999826431274, "biz": 0.5156999826431274, "noise": 0.4226999878883362, "priority": 0.6187999844551086, "weight": 1.2}];
+  const PIPELINE_EXAMPLES  = [{"label": "REJECTED", "title": "Companies Are Using Reddit to Manipulate ChatGPT and Google AI Search", "source": "404_MEDIA", "tech": 0.4092999994754791, "biz": 0.4092999994754791, "noise": 0.42829999327659607, "priority": 0.0, "weight": 1.2, "passed": false}, {"label": "LOWEST SCORER", "title": "Google pushes water standards amid data center backlash", "source": "AXIOS_AI", "tech": 0.2206999957561493, "biz": 0.2206999957561493, "noise": 0.1444000005722046, "priority": 0.2648000121116638, "weight": 1.2, "passed": true}, {"label": "MEDIAN SCORER", "title": "Tencent\u2019s chief AI scientist dismisses lag concerns, says race a \u2018long-t", "source": "SCMP_TECH", "tech": 0.3571000099182129, "biz": 0.3571000099182129, "noise": 0.2281000018119812, "priority": 0.4284999966621399, "weight": 1.2, "passed": true}, {"label": "TOP SCORER", "title": "OpenAI and the Trump administration are negotiating a government stake i", "source": "THE_DECODER", "tech": 0.5464000105857849, "biz": 0.5464000105857849, "noise": 0.4300000071525574, "priority": 0.7649999856948853, "weight": 1.4, "passed": true}];
+
+  // ── Theme helpers ────────────────────────────────────────────────────────
+  const root   = document.documentElement;
+  const toggle = document.getElementById('theme-toggle');
+
+  function getCSSVar(name) {
+    return getComputedStyle(root).getPropertyValue(name).trim();
+  }
+
+  function applyTheme(mode) {
+    root.setAttribute('data-theme', mode);
+    try { localStorage.setItem('the-inference-theme', mode); } catch(e) {}
+    renderSourceChart();
+    renderCards();
+  }
+
+  const stored = (() => { try { return localStorage.getItem('the-inference-theme'); } catch(e) { return null; } })();
+  const system = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+  // Apply theme silently on load without triggering rerender before DOM ready
+  root.setAttribute('data-theme', stored || system);
+
+  toggle.addEventListener('click', () => {
+    applyTheme(root.getAttribute('data-theme') === 'light' ? 'dark' : 'light');
+  });
+  toggle.addEventListener('keydown', e => {
+    if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggle.click(); }
+  });
+  window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
+    const saved = (() => { try { return localStorage.getItem('the-inference-theme'); } catch(e) { return null; } })();
+    if (!saved) applyTheme(e.matches ? 'dark' : 'light');
+  });
+
+  // ── Tier colour resolver ─────────────────────────────────────────────────
+  function tierColor(tier) {
+    const map = { S: '--tier-s', A: '--tier-a', B: '--tier-b', C: '--tier-c' };
+    return getCSSVar(map[tier] || '--tier-c');
+  }
+
+  // ── Section 4: Prioritizer Animation ────────────────────────────────────
+  (function() {
+    const canvas = document.getElementById('prioritizer-canvas');
+    if (!canvas || !CONSTELLATION.length) return;
+
+    const DPR = window.devicePixelRatio || 1;
+    let W, H, animId;
+
+    // ── Phase durations — slower so labels are readable ─────────────────
+    const PHASE_DUR = [1400, 1800, 900, 2800, 900, 2400, 900, 1600, 2200, 600];
+
+    // ── Top padding constant — keeps dots clear of the phase label ────────
+    const TOP_PAD = 0.14;  // 14% of H reserved for label area
+    const TOTAL_PHASES = PHASE_DUR.length;
+
+    let phase      = 0;
+    let phaseStart = 0;
+    let animFrame  = 0;
+
+    // ── Easing ────────────────────────────────────────────────────────────
+    function easeOut(t)   { return 1 - Math.pow(1 - t, 3); }
+    function easeInOut(t) { return t < 0.5 ? 2*t*t : 1-Math.pow(-2*t+2,2)/2; }
+    function lerp(a, b, t) { return a + (b - a) * t; }
+
+    // ── Build dot dataset from CONSTELLATION ─────────────────────────────
+    // Sort by priority descending for the ranked order
+    const sorted = [...CONSTELLATION].sort((a, b) => b.priority - a.priority);
+
+    // Assign each dot a source-count tracker for diversity cap simulation
+    const sourceCounts = {};
+    const dotData = sorted.map((d, i) => {
+      sourceCounts[d.source] = (sourceCounts[d.source] || 0) + 1;
+      const capFail  = sourceCounts[d.source] > 2;
+      // Simple dedup: flag if title first 30 chars matches a higher-ranked dot
+      const dedupFail = !capFail && sorted.slice(0, i).some(prev =>
+        prev.title.slice(0, 30) === d.title.slice(0, 30)
+      );
+      const survives = !capFail && !dedupFail;
+      const inTop10  = survives && sorted.filter(x => !x._capFail && !x._dedupFail).indexOf(d) < 10;
+      return {
+        ...d,
+        rankIdx:   i,
+        capFail,
+        dedupFail,
+        survives,
+        // positions set in setup()
+        scatterX: 0, scatterY: 0,
+        sortX: 0,    sortY: 0,
+        fanX: 0,     fanY: 0,
+        curX: 0,     curY: 0,
+        opacity: 1,
+        ejecting: false,
+        ejectVX: 0,  ejectVY: 0,
+      };
+    });
+
+    function setup() {
+      W = canvas.offsetWidth || 700;
+      H = Math.round(W * 0.62);
+      canvas.width  = W * DPR;
+      canvas.height = H * DPR;
+      canvas.style.height = H + 'px';
+
+      const CX = W / 2;
+      const colX   = Math.round(W * 0.38);
+      const dotR   = Math.max(4, Math.round(W * 0.007));
+      const dotAreaH = H * (1 - TOP_PAD - 0.08);
+      const spacing  = Math.max(dotR * 2.8, Math.round(dotAreaH / dotData.length));
+
+      dotData.forEach((d, i) => {
+        // Scatter: random positions below label area
+        d.scatterX = Math.round(W * 0.08 + Math.random() * W * 0.80);
+        d.scatterY = Math.round(H * (TOP_PAD + 0.02) + Math.random() * H * (1 - TOP_PAD - 0.10));
+        // Sorted column: starts below label area
+        d.sortX = colX;
+        d.sortY = Math.round(H * (TOP_PAD + 0.02) + i * spacing);
+        // Fan row: top 10 centred both horizontally and vertically in canvas
+        const top10 = dotData.filter(x => x.survives).slice(0, 10);
+        const t10i  = top10.indexOf(d);
+        if (t10i >= 0) {
+          const rowW  = Math.min(W * 0.78, top10.length * dotR * 5);
+          const rowX0 = CX - rowW / 2 + dotR * 2;
+          d.fanX = Math.round(rowX0 + t10i * (rowW / (top10.length - 1 || 1)));
+          d.fanY = Math.round(H * 0.52);  // vertically centred
+        }
+        d.curX = d.scatterX;
+        d.curY = d.scatterY;
+        d.opacity = 1;
+        d.ejecting = false;
+      });
+    }
+
+    // ── Draw frame ────────────────────────────────────────────────────────
+    function draw(ts) {
+      const ctx = canvas.getContext('2d');
+      ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
+
+      if (!phaseStart) phaseStart = ts;
+      const elapsed = ts - phaseStart;
+      const p = Math.min(elapsed / PHASE_DUR[phase], 1);
+
+      if (elapsed >= PHASE_DUR[phase]) {
+        phaseStart = ts;
+        phase = (phase + 1) % TOTAL_PHASES;
+        if (phase === 0) setup(); // reset on loop
+      }
+
+      const ep = easeOut(p);
+      const eip = easeInOut(p);
+
+      ctx.fillStyle = getCSSVar('--paper-warm');
+      ctx.fillRect(0, 0, W, H);
+
+      const dotR = Math.max(4, Math.round(W * 0.007));
+      const CX   = W / 2;
+
+      // ── Phase label — in-progress only, no completion messages ─────────
+      const phaseLabels = [
+        'UNSORTED CURATED POOL',
+        'SORTING BY PRIORITY SCORE',
+        '',
+        'APPLYING SOURCE DIVERSITY CAP',
+        '',
+        'APPLYING DEDUPLICATION FILTER',
+        '',
+        'SELECTING TOP 10',
+        '',
+        '',
+      ];
+      const phaseLabel = phaseLabels[phase] || '';
+      if (phaseLabel) {
+        ctx.font        = `500 ${Math.round(11 * W/700)}px 'IBM Plex Mono', monospace`;
+        ctx.fillStyle   = getCSSVar('--ink-light');
+        ctx.textAlign   = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(phaseLabel, CX, Math.round(H * 0.07));
+      }
+
+      // ── Update dot positions per phase ───────────────────────────────
+      dotData.forEach((d, i) => {
+
+        if (phase === 0) {
+          // Scatter — dots sit at scatter positions
+          d.curX = d.scatterX;
+          d.curY = d.scatterY;
+          d.opacity = 1;
+          d.ejecting = false;
+        }
+
+        else if (phase === 1) {
+          // Sort — animate from scatter → sortY
+          d.curX = lerp(d.scatterX, d.sortX, ep);
+          d.curY = lerp(d.scatterY, d.sortY, ep);
+          d.opacity = 1;
+        }
+
+        else if (phase === 2) {
+          d.curX = d.sortX;
+          d.curY = d.sortY;
+        }
+
+        else if (phase === 3) {
+          const sweepY = H * TOP_PAD + (H * (1 - TOP_PAD - 0.06)) * p;
+          if (d.capFail && d.sortY < sweepY && !d.ejecting) {
+            d.ejecting = true;
+            d.ejectVX  = (Math.random() > 0.5 ? 1 : -1) * (2 + Math.random() * 2);
+            d.ejectVY  = -0.5;
+          }
+          if (d.ejecting) {
+            d.curX    += d.ejectVX;
+            d.curY    += d.ejectVY;
+            d.opacity  = Math.max(0, d.opacity - 0.025);
+          }
+        }
+
+        else if (phase === 4) {
+          // Hold — culled dots stay invisible
+          if (d.capFail) d.opacity = 0;
+        }
+
+        else if (phase === 5) {
+          const sweepY = H * TOP_PAD + (H * (1 - TOP_PAD - 0.06)) * p;
+          if (d.dedupFail && d.sortY < sweepY && !d.ejecting) {
+            d.ejecting = true;
+            d.ejectVX  = (Math.random() > 0.5 ? 0.8 : -0.8);
+            d.ejectVY  = -0.3;
+          }
+          if (d.ejecting) {
+            d.curX    += d.ejectVX;
+            d.curY    += d.ejectVY;
+            d.opacity  = Math.max(0, d.opacity - 0.03);
+          }
+        }
+
+        else if (phase === 6) {
+          if (d.capFail || d.dedupFail) d.opacity = 0;
+        }
+
+        else if (phase === 7) {
+          // Fan out — only top 10 survivors with a fanX position are visible
+          if (d.survives && d.fanX) {
+            d.curX = lerp(d.sortX, d.fanX, ep);
+            d.curY = lerp(d.sortY, d.fanY, ep);
+            d.opacity = 1;
+          } else {
+            // Everything else — non-survivors AND survivors without fanX — hidden
+            d.opacity = 0;
+          }
+        }
+
+        else if (phase === 8) {
+          // Hold at fan positions — same rule
+          if (d.survives && d.fanX) {
+            d.curX = d.fanX;
+            d.curY = d.fanY;
+            d.opacity = 1;
+          } else {
+            d.opacity = 0;
+          }
+        }
+
+        else if (phase === 9) {
+          // Instant hide — no fade, nothing visible at loop boundary
+          d.opacity = 0;
+        }
+      });
+
+      // ── Draw sweep line ──────────────────────────────────────────────
+      if (phase === 3 || phase === 5) {
+        const sweepY   = H * TOP_PAD + (H * (1 - TOP_PAD - 0.06)) * p;
+        const sweepCol = phase === 3 ? getCSSVar('--bar-biz') : getCSSVar('--bar-tech');
+        const sweepLbl = phase === 3 ? 'SOURCE CAP · MAX 2 PER SOURCE' : 'DEDUP · FIRST 30 CHARS MATCH';
+        ctx.strokeStyle = sweepCol;
+        ctx.lineWidth   = 1;
+        ctx.globalAlpha = 0.5;
+        ctx.setLineDash([4, 4]);
+        ctx.beginPath();
+        ctx.moveTo(W * 0.06, sweepY);
+        ctx.lineTo(W * 0.72, sweepY);
+        ctx.stroke();
+        ctx.setLineDash([]);
+        ctx.globalAlpha = 1;
+        ctx.font      = `500 ${Math.round(9 * W/700)}px 'IBM Plex Mono', monospace`;
+        ctx.fillStyle = sweepCol;
+        ctx.textAlign = 'left';
+        ctx.textBaseline = 'bottom';
+        ctx.fillText(sweepLbl, W * 0.06, sweepY - 4);
+      }
+
+      // ── Draw priority score bars (phases 1-6) ────────────────────────
+      if (phase >= 1 && phase <= 6) {
+        const barX   = Math.round(W * 0.42);
+        const barMaxW = Math.round(W * 0.38);
+        const maxP   = Math.max(...dotData.map(d => d.priority), 0.001);
+        const barAlpha = phase <= 2 ? ep : (phase <= 6 ? 1 : 0);
+
+        dotData.forEach(d => {
+          if (d.opacity <= 0) return;
+          const barW = Math.round((d.priority / maxP) * barMaxW);
+          const barH = Math.max(2, dotR - 1);
+          const col  = tierColor(d.tier);
+          ctx.fillStyle   = col;
+          ctx.globalAlpha = d.opacity * 0.35 * barAlpha;
+          ctx.fillRect(barX, d.curY - barH/2, barW, barH);
+          ctx.globalAlpha = 1;
+
+          // Score label — readable size and colour
+          if (phase >= 2 && phase <= 6 && d.opacity > 0.3) {
+            ctx.font      = `500 ${Math.round(9 * W/700)}px 'IBM Plex Mono', monospace`;
+            ctx.fillStyle = getCSSVar('--ink-light');
+            ctx.textAlign = 'left';
+            ctx.textBaseline = 'middle';
+            ctx.globalAlpha = d.opacity * 0.85;
+            ctx.fillText(d.priority.toFixed(3), barX + barW + 5, d.curY);
+            ctx.globalAlpha = 1;
+          }
+        });
+      }
+
+      // ── Draw rank numbers (phases 7-8) ──────────────────────────────
+      if (phase === 7 || phase === 8) {
+        const top10  = dotData.filter(x => x.survives).slice(0, 10);
+        const fadeIn = phase === 7 ? easeOut(p) : 1;
+        top10.forEach((d, i) => {
+          if (d.opacity <= 0) return;
+          ctx.font      = `500 ${Math.round(10 * W/700)}px 'IBM Plex Mono', monospace`;
+          ctx.fillStyle = getCSSVar('--ink-light');
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'bottom';
+          ctx.globalAlpha = d.opacity * fadeIn;
+          ctx.fillText(`#${i+1}`, d.curX, d.curY - dotR - 3);
+          ctx.globalAlpha = 1;
+        });
+      }
+
+      // ── Draw column axis label (phases 2, 4, 6 only — not during sweeps) ──
+      if (phase === 2 || phase === 4 || phase === 6) {
+        ctx.font      = `500 ${Math.round(9 * W/700)}px 'IBM Plex Mono', monospace`;
+        ctx.fillStyle = getCSSVar('--ink-light');
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'bottom';
+        ctx.globalAlpha = 0.8;
+        ctx.fillText('PRIORITY SCORE →', Math.round(W * 0.60), H - 8);
+        ctx.globalAlpha = 1;
+      }
+
+      // ── Draw dots ────────────────────────────────────────────────────
+      dotData.forEach(d => {
+        // In fan phases, only draw the top 10 survivors — hide everything else
+        if ((phase === 7 || phase === 8) && !d.survives) return;
+        if (d.opacity <= 0) return;
+        const col = tierColor(d.tier);
+        ctx.beginPath();
+        ctx.arc(d.curX, d.curY, dotR, 0, Math.PI * 2);
+        ctx.fillStyle   = col;
+        ctx.globalAlpha = d.opacity * 0.85;
+        ctx.fill();
+
+        // Ring on top 10 in final phases
+        if ((phase === 7 || phase === 8) && d.survives) {
+          ctx.beginPath();
+          ctx.arc(d.curX, d.curY, dotR + 3, 0, Math.PI * 2);
+          ctx.strokeStyle = col;
+          ctx.lineWidth   = 1.5;
+          ctx.globalAlpha = d.opacity * 0.6;
+          ctx.stroke();
+        }
+        ctx.globalAlpha = 1;
+      });
+
+      animId = requestAnimationFrame(draw);
+    }
+
+    function start() {
+      if (animId) cancelAnimationFrame(animId);
+      phase = 0; phaseStart = 0;
+      setup();
+      animId = requestAnimationFrame(draw);
+    }
+
+    window.addEventListener('resize', () => {
+      if (animId) cancelAnimationFrame(animId);
+      clearTimeout(canvas._resizeTimer);
+      canvas._resizeTimer = setTimeout(start, 120);
+    });
+
+    start();
+  })();
+
+  // Redraw on resize (legacy — kept for theme toggle rerender)
+  let resizeTimer;
+  window.addEventListener('resize', () => {
+    clearTimeout(resizeTimer);
+  });
+
+  // ── Section 3: Source Bar Chart ──────────────────────────────────────────
+  function renderSourceChart() {
+    const container = document.getElementById('source-chart');
+    if (!container) return;
+    container.innerHTML = '';
+
+    const maxCurated = Math.max(...SOURCE_BARS.map(s => s.curated), 1);
+
+    SOURCE_BARS.forEach(s => {
+      const pct  = (s.curated / maxCurated * 100).toFixed(1);
+      const color = getCSSVar(
+        s.tier === 'S' ? '--tier-s' :
+        s.tier === 'A' ? '--tier-a' :
+        s.tier === 'B' ? '--tier-b' : '--tier-c'
+      );
+      const badge = s.in_top10 ? '<span class="top10-badge">Top 10</span>' : '';
+
+      container.innerHTML += `
+        <div class="source-row">
+          <div class="source-name">${s.name.toLowerCase().replace(/_/g,' ')}</div>
+          <div class="bar-track">
+            <div class="bar-fill" style="width:${pct}%;background:${color};opacity:0.8"></div>
+          </div>
+          <div class="bar-count">${s.curated}${badge}</div>
+        </div>`;
+    });
+  }
+
+  // ── Section 4: Scoring Cards ─────────────────────────────────────────────
+  function renderCards() {
+    const grid = document.getElementById('cards-grid');
+    if (!grid) return;
+    grid.innerHTML = '';
+
+    const techColor  = getCSSVar('--bar-tech');
+    const bizColor   = getCSSVar('--bar-biz');
+    const noiseColor = getCSSVar('--bar-noise');
+
+    CARDS.forEach(c => {
+      const techPct  = (c.tech  * 100).toFixed(1);
+      const bizPct   = (c.biz   * 100).toFixed(1);
+      const noisePct = (c.noise * 100).toFixed(1);
+
+      grid.innerHTML += `
+        <div class="score-card">
+          <div class="card-rank">${String(c.rank).padStart(2,'0')}</div>
+          <div class="card-title">${c.title}</div>
+          <div class="card-domain">${c.domain}</div>
+          <div class="score-bars">
+            <div class="score-bar-row">
+              <div class="score-bar-label">Tech</div>
+              <div class="score-bar-track"><div class="score-bar-fill" style="width:${techPct}%;background:${techColor}"></div></div>
+              <div class="score-bar-val">${c.tech.toFixed(3)}</div>
+            </div>
+            <div class="score-bar-row">
+              <div class="score-bar-label">Biz</div>
+              <div class="score-bar-track"><div class="score-bar-fill" style="width:${bizPct}%;background:${bizColor}"></div></div>
+              <div class="score-bar-val">${c.biz.toFixed(3)}</div>
+            </div>
+            <div class="score-bar-row">
+              <div class="score-bar-label">Noise</div>
+              <div class="score-bar-track"><div class="score-bar-fill" style="width:${noisePct}%;background:${noiseColor}"></div></div>
+              <div class="score-bar-val">${c.noise.toFixed(3)}</div>
+            </div>
+          </div>
+          <div class="card-footer">
+            <div>
+              <div class="card-priority">Score: <strong>${c.priority.toFixed(4)}</strong></div>
+              <div class="card-weight">×${c.weight} authority</div>
+            </div>
+            <a href="${c.link}" class="card-read" target="_blank" rel="noopener noreferrer">Read →</a>
+          </div>
+        </div>`;
+    });
+  }
+
+  // ── Vector Pull Animation ────────────────────────────────────────────────
+  (function() {
+    const canvas = document.getElementById('vector-pull-canvas');
+    if (!canvas) return;
+
+    const DPR = window.devicePixelRatio || 1;
+    let W, H, cx, cy, animId;
+
+    // Three anchor vectors: Tech, Biz, Noise
+    const ANCHORS = [
+      { label: 'TECH',     angle: -Math.PI / 2,         color: '--bar-tech'  },
+      { label: 'BUSINESS', angle: -Math.PI / 2 + (2 * Math.PI / 3),  color: '--bar-biz'   },
+      { label: 'NOISE',    angle: -Math.PI / 2 + (4 * Math.PI / 3),  color: '--bar-noise' },
+    ];
+
+    // Article node state
+    const node = { x: 0, y: 0, vx: 0, vy: 0 };
+    // Simulated scores that oscillate over time
+    let t = 0;
+
+    function setup() {
+      W = canvas.offsetWidth || 560;
+      H = Math.round(W * 0.52);
+      canvas.width  = W * DPR;
+      canvas.height = H * DPR;
+      canvas.style.height = H + 'px';
+      cx = W / 2;
+      cy = H / 2;
+      node.x = cx;
+      node.y = cy;
+    }
+
+    function getAnchorPos(anchor, radius) {
+      return {
+        x: cx + Math.cos(anchor.angle) * radius,
+        y: cy + Math.sin(anchor.angle) * radius,
+      };
+    }
+
+    function draw() {
+      const ctx = canvas.getContext('2d');
+      ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
+
+      // Background
+      ctx.fillStyle = getCSSVar('--paper-warm');
+      ctx.fillRect(0, 0, W, H);
+
+      const radius = Math.min(W, H) * 0.34;
+
+      // Oscillating scores — Tech and Biz compete, Noise stays lower
+      const techScore = 0.38 + 0.28 * Math.sin(t * 0.7);
+      const bizScore  = 0.32 + 0.24 * Math.sin(t * 0.5 + 1.2);
+      const noiseScore = 0.18 + 0.10 * Math.sin(t * 0.9 + 2.4);
+      const scores = [techScore, bizScore, noiseScore];
+
+      // Compute target position as weighted sum of anchor positions
+      const totalScore = techScore + bizScore + noiseScore;
+      let tx = 0, ty = 0;
+      ANCHORS.forEach((a, i) => {
+        const pos = getAnchorPos(a, radius * 0.72);
+        tx += pos.x * (scores[i] / totalScore);
+        ty += pos.y * (scores[i] / totalScore);
+      });
+
+      // Spring physics toward target
+      const spring = 0.06, damp = 0.78;
+      node.vx = (node.vx + (tx - node.x) * spring) * damp;
+      node.vy = (node.vy + (ty - node.y) * spring) * damp;
+      node.x += node.vx;
+      node.y += node.vy;
+
+      // Draw tension lines from node to each anchor
+      ANCHORS.forEach((a, i) => {
+        const pos = getAnchorPos(a, radius);
+        const score = scores[i];
+        const col = getCSSVar(a.color);
+
+        // Line thickness proportional to score
+        ctx.beginPath();
+        ctx.moveTo(node.x, node.y);
+        ctx.lineTo(pos.x, pos.y);
+        ctx.strokeStyle = col;
+        ctx.lineWidth   = 1 + score * 5;
+        ctx.globalAlpha = 0.25 + score * 0.55;
+        ctx.stroke();
+        ctx.globalAlpha = 1;
+
+        // Anchor well circle
+        ctx.beginPath();
+        ctx.arc(pos.x, pos.y, 22, 0, Math.PI * 2);
+        ctx.fillStyle = col;
+        ctx.globalAlpha = 0.12;
+        ctx.fill();
+        ctx.globalAlpha = 1;
+
+        ctx.beginPath();
+        ctx.arc(pos.x, pos.y, 22, 0, Math.PI * 2);
+        ctx.strokeStyle = col;
+        ctx.lineWidth = 1.5;
+        ctx.globalAlpha = 0.6;
+        ctx.stroke();
+        ctx.globalAlpha = 1;
+
+        // Score value inside well
+        ctx.fillStyle = getCSSVar('--ink-light');
+        ctx.font = `500 9px 'IBM Plex Mono', monospace`;
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(score.toFixed(2), pos.x, pos.y + 14);
+
+        // Anchor label above well
+        ctx.fillStyle = getCSSVar('--ink-faint');
+        ctx.font = `500 8px 'IBM Plex Mono', monospace`;
+        ctx.letterSpacing = '0.14em';
+        const labelOff = a.angle < -Math.PI * 0.9 ? -30 : (a.angle > 0 ? 30 : 30);
+        ctx.fillText(a.label, pos.x, pos.y - 30);
+      });
+
+      // Article node
+      const winning = scores.indexOf(Math.max(...scores));
+      const nodeColor = getCSSVar(ANCHORS[winning].color);
+
+      ctx.beginPath();
+      ctx.arc(node.x, node.y, 9, 0, Math.PI * 2);
+      ctx.fillStyle = nodeColor;
+      ctx.globalAlpha = 0.9;
+      ctx.fill();
+      ctx.globalAlpha = 1;
+
+      ctx.beginPath();
+      ctx.arc(node.x, node.y, 13, 0, Math.PI * 2);
+      ctx.strokeStyle = nodeColor;
+      ctx.lineWidth = 1;
+      ctx.globalAlpha = 0.35;
+      ctx.stroke();
+      ctx.globalAlpha = 1;
+
+      // "ARTICLE" label below node
+      ctx.fillStyle = getCSSVar('--ink-faint');
+      ctx.font = `500 7px 'IBM Plex Mono', monospace`;
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'top';
+      ctx.fillText('ARTICLE', node.x, node.y + 16);
+
+      t += 0.018;
+      animId = requestAnimationFrame(draw);
+    }
+
+    function start() {
+      if (animId) cancelAnimationFrame(animId);
+      setup();
+      draw();
+    }
+
+    window.addEventListener('resize', () => {
+      if (animId) cancelAnimationFrame(animId);
+      clearTimeout(canvas._resizeTimer);
+      canvas._resizeTimer = setTimeout(start, 120);
+    });
+
+    start();
+  })();
+
+  // ── Curation Filter: Option D — Cycling Pipeline Diagram ───────────────
+  (function() {
+    const canvas = document.getElementById('funnel-canvas');
+    if (!canvas || !PIPELINE_EXAMPLES.length) return;
+
+    const DPR = window.devicePixelRatio || 1;
+    let W, H, animId;
+    let paused = false;
+
+    // ── Canvas click toggles pause ────────────────────────────────────────
+    canvas.addEventListener('click', () => {
+      paused = !paused;
+      if (paused) {
+        canvas._pausedAt = performance.now();
+      } else {
+        const pausedDuration = performance.now() - canvas._pausedAt;
+        stageStart += pausedDuration;
+      }
+    });
+    // ── Animation state machine ──────────────────────────────────────────
+    // Stages per article (ms each):
+    // 0: title appears          800ms
+    // 1: embedding pulse        900ms
+    // 2: score bars animate    1200ms
+    // 3: gate 1 decision        700ms
+    // 4: gate 2 decision        700ms  (skipped if failed gate 1)
+    // 5: priority calc          900ms  (skipped if failed)
+    // 6: hold                  1400ms
+    // 7: fade out               600ms
+
+    const STAGE_DUR = [800, 900, 1200, 700, 700, 900, 1400, 600];
+    const TOTAL_STAGES = STAGE_DUR.length;
+
+    let articleIdx  = 0;
+    let stage       = 0;
+    let stageStart  = 0;
+    let globalAlpha = 1;
+
+    function totalDur(ex) {
+      // If rejected: skip stages 5 (priority)
+      // If failed gate 1: skip stages 4 and 5
+      return STAGE_DUR.reduce((s, d) => s + d, 0);
+    }
+
+    function setup() {
+      W = canvas.offsetWidth || 680;
+      H = Math.round(W * 0.88);
+      canvas.width  = W * DPR;
+      canvas.height = H * DPR;
+      canvas.style.height = H + 'px';
+    }
+
+    // ── Layout constants (computed from W/H) ────────────────────────────
+    function layout() {
+      const PAD   = Math.round(W * 0.05);
+      const CX    = W / 2;
+      const ROW_TITLE   = Math.round(H * 0.13);
+      const ROW_EMBED   = Math.round(H * 0.24);
+      const ROW_SCORES  = Math.round(H * 0.40);
+      const ROW_GATES   = Math.round(H * 0.63);
+      const ROW_PRIORITY= Math.round(H * 0.82);
+      const BAR_W       = Math.round(W * 0.46);
+      const BAR_H       = Math.round(H * 0.028);
+      const BAR_X       = CX - BAR_W / 2;
+      return { PAD, CX, ROW_TITLE, ROW_EMBED, ROW_SCORES, ROW_GATES, ROW_PRIORITY, BAR_W, BAR_H, BAR_X };
+    }
+
+    // ── Easing ──────────────────────────────────────────────────────────
+    function easeOut(t) { return 1 - Math.pow(1 - t, 3); }
+    function easeInOut(t) { return t < 0.5 ? 2*t*t : 1-Math.pow(-2*t+2,2)/2; }
+
+    // ── Draw helpers ────────────────────────────────────────────────────
+    function mono(ctx, size) {
+      ctx.font = `500 ${Math.round(size * Math.min(W/680, 1))}px 'IBM Plex Mono', monospace`;
+    }
+    function serif(ctx, size, weight) {
+      ctx.font = `${weight||400} ${Math.round(size * Math.min(W/680, 1))}px 'Source Serif 4', serif`;
+    }
+
+    function drawConnector(ctx, x1, y1, x2, y2, progress, color) {
+      ctx.save();
+      ctx.strokeStyle = color;
+      ctx.lineWidth   = 1;
+      ctx.globalAlpha = 0.35;
+      ctx.setLineDash([3, 4]);
+      ctx.beginPath();
+      ctx.moveTo(x1, y1);
+      const ex = x1 + (x2 - x1) * progress;
+      const ey = y1 + (y2 - y1) * progress;
+      ctx.lineTo(ex, ey);
+      ctx.stroke();
+      ctx.setLineDash([]);
+      ctx.restore();
+    }
+
+    function drawScoreBar(ctx, x, y, w, h, value, color, label, alpha) {
+      ctx.save();
+      ctx.globalAlpha = alpha;
+      // Track
+      ctx.fillStyle = getCSSVar('--rule');
+      ctx.fillRect(x, y, w, h);
+      // Fill
+      ctx.fillStyle = color;
+      ctx.fillRect(x, y, w * Math.min(value / 0.6, 1), h);
+      // Threshold line at 0.22/0.6
+      const tx = x + w * (0.22 / 0.6);
+      ctx.strokeStyle = getCSSVar('--ink-faint');
+      ctx.lineWidth   = 1;
+      ctx.setLineDash([2, 2]);
+      ctx.beginPath(); ctx.moveTo(tx, y - 2); ctx.lineTo(tx, y + h + 2); ctx.stroke();
+      ctx.setLineDash([]);
+      // Label — ink-mid so it reads clearly
+      mono(ctx, 9);
+      ctx.fillStyle    = getCSSVar('--ink-mid');
+      ctx.textAlign    = 'right';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(label, x - 6, y + h / 2);
+      // Value — ink-mid
+      ctx.fillStyle  = getCSSVar('--ink-mid');
+      ctx.textAlign  = 'left';
+      ctx.fillText(value.toFixed(3), x + w + 6, y + h / 2);
+      ctx.restore();
+    }
+
+    function drawDecision(ctx, cx, y, passed, gateNum, condition, alpha) {
+      ctx.save();
+      ctx.globalAlpha = alpha;
+      const col = passed ? getCSSVar('--bar-tech') : getCSSVar('--bar-noise');
+      const lbl = passed ? '✓ PASS' : '✗ FAIL';
+      const bw  = Math.round(W * 0.52);
+      const bx  = cx - bw / 2;
+
+      // Horizontal rule only — no box
+      ctx.strokeStyle = getCSSVar('--rule');
+      ctx.lineWidth   = 1;
+      ctx.beginPath();
+      ctx.moveTo(bx, y);
+      ctx.lineTo(bx + bw, y);
+      ctx.stroke();
+
+      // Gate label left — ink-mid for readability
+      mono(ctx, 9);
+      ctx.fillStyle    = getCSSVar('--ink-mid');
+      ctx.textAlign    = 'left';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(`GATE ${gateNum} · ${condition}`, bx, y + Math.round(H * 0.022));
+
+      // Decision right — coloured
+      mono(ctx, 10);
+      ctx.fillStyle  = col;
+      ctx.textAlign  = 'right';
+      ctx.fillText(lbl, bx + bw, y + Math.round(H * 0.022));
+      ctx.restore();
+    }
+
+    // ── Main draw loop ───────────────────────────────────────────────────
+    function draw(ts) {
+      const ctx = canvas.getContext('2d');
+      ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
+
+      // Background
+      ctx.fillStyle = getCSSVar('--paper-warm');
+      ctx.fillRect(0, 0, W, H);
+
+      const ex  = PIPELINE_EXAMPLES[articleIdx];
+      const L   = layout();
+
+      // Advance stage only when not paused
+      if (!paused) {
+        if (!stageStart) stageStart = ts;
+        const elapsed = ts - stageStart;
+        if (elapsed >= STAGE_DUR[stage]) {
+          stageStart = ts;
+          stage++;
+          if (stage >= TOTAL_STAGES) {
+            stage       = 0;
+            articleIdx  = (articleIdx + 1) % PIPELINE_EXAMPLES.length;
+          }
+        }
+      }
+
+      const elapsed = stageStart ? ts - stageStart : 0;
+      const stageP = paused ? 1 : Math.min(elapsed / STAGE_DUR[stage], 1);
+
+      // Overall card fade
+      const cardAlpha = stage === TOTAL_STAGES - 1 ? 1 - easeInOut(stageP) : 1;
+
+      ctx.save();
+      ctx.globalAlpha = cardAlpha;
+
+      // ── Article label badge ──────────────────────────────────────────
+      const labelCol =
+        ex.label === 'REJECTED'      ? getCSSVar('--bar-noise') :
+        ex.label === 'TOP SCORER'    ? getCSSVar('--bar-tech')  :
+        ex.label === 'MEDIAN SCORER' ? getCSSVar('--bar-biz')   :
+                                       getCSSVar('--ink-faint');
+
+      const badgeY = L.ROW_TITLE - Math.round(H * 0.090);
+      mono(ctx, 14);
+      ctx.textAlign    = 'center';
+      ctx.textBaseline = 'middle';
+      const badgeText  = ex.label;
+      const badgeW     = ctx.measureText(badgeText).width + 32;
+      const badgeH     = Math.round(H * 0.052);
+      ctx.fillStyle   = labelCol;
+      ctx.globalAlpha = cardAlpha * 0.18;
+      ctx.beginPath();
+      ctx.roundRect(L.CX - badgeW/2, badgeY - badgeH/2, badgeW, badgeH, badgeH/2);
+      ctx.fill();
+      ctx.globalAlpha = cardAlpha;
+      ctx.strokeStyle = labelCol;
+      ctx.lineWidth   = 1.5;
+      ctx.globalAlpha = cardAlpha * 0.5;
+      ctx.beginPath();
+      ctx.roundRect(L.CX - badgeW/2, badgeY - badgeH/2, badgeW, badgeH, badgeH/2);
+      ctx.stroke();
+      ctx.globalAlpha = cardAlpha;
+      ctx.fillStyle = labelCol;
+      ctx.fillText(badgeText, L.CX, badgeY);
+
+      // ── Stage 0+: Article title ──────────────────────────────────────
+      if (stage >= 0) {
+        const a = stage === 0 ? easeOut(stageP) : 1;
+        ctx.save();
+        ctx.globalAlpha *= a;
+        serif(ctx, 13, 700);
+        ctx.fillStyle    = getCSSVar('--ink');
+        ctx.textAlign    = 'center';
+        ctx.textBaseline = 'middle';
+        const maxW = W * 0.82;
+        const words = ex.title.split(' ');
+        let line1 = '', line2 = '';
+        let building = '';
+        for (const w of words) {
+          const test = building ? building + ' ' + w : w;
+          ctx.font = `700 ${Math.round(13 * Math.min(W/680,1))}px 'Source Serif 4', serif`;
+          if (ctx.measureText(test).width > maxW && building) {
+            if (!line1) { line1 = building; building = w; }
+            else { line2 = building + (building ? ' ' : '') + words.slice(words.indexOf(w)).join(' '); break; }
+          } else { building = test; }
+        }
+        if (!line1) { line1 = building; } else if (!line2) { line2 = building; }
+        const lineH = Math.round(H * 0.042);
+        ctx.fillText(line1, L.CX, L.ROW_TITLE - (line2 ? lineH/2 : 0));
+        if (line2) ctx.fillText(line2, L.CX, L.ROW_TITLE + lineH/2);
+
+        // Source — larger and ink-mid so it reads clearly
+        mono(ctx, 10);
+        ctx.fillStyle = getCSSVar('--ink-mid');
+        ctx.fillText(ex.source.toLowerCase().replace(/_/g,' '), L.CX, L.ROW_TITLE + lineH + 6);
+        ctx.restore();
+      }
+
+      // ── Connector: title → embedding ────────────────────────────────
+      if (stage >= 1) {
+        const p = stage === 1 ? easeOut(stageP * 0.5) : 1;
+        drawConnector(ctx, L.CX, L.ROW_TITLE + Math.round(H*0.04), L.CX, L.ROW_EMBED - Math.round(H*0.04), p, getCSSVar('--rule-heavy'));
+      }
+
+      // ── Stage 1+: Embedding block — no box, just model name + cells ──
+      if (stage >= 1) {
+        const a  = stage === 1 ? easeOut(stageP) : 1;
+        const bw = Math.round(W * 0.62);
+        const bh = Math.round(H * 0.072);
+        const bx = L.CX - bw / 2;
+        const by = L.ROW_EMBED - bh / 2;
+
+        ctx.save();
+        ctx.globalAlpha *= a;
+
+        // Pulse glow on the model name text when stage === 1
+        if (stage === 1) {
+          const pulse = 0.5 + 0.5 * Math.sin(stageP * Math.PI * 4);
+          ctx.shadowColor = getCSSVar('--bar-biz');
+          ctx.shadowBlur  = 6 * pulse;
+        }
+
+        // Model name — larger and ink colour so it reads clearly
+        mono(ctx, 11);
+        ctx.fillStyle    = getCSSVar('--ink-light');
+        ctx.textAlign    = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText('SentenceTransformer · all-MiniLM-L6-v2', L.CX, by + bh * 0.30);
+        ctx.shadowBlur = 0;
+
+        // Vector cells below model name
+        const cells = 32;
+        const cellW = Math.round(bw * 0.72 / cells);
+        const cellH = Math.round(bh * 0.28);
+        const cellsX = L.CX - (cells * (cellW + 1)) / 2;
+        const cellsY = by + bh * 0.58;
+        for (let i = 0; i < cells; i++) {
+          const v = Math.abs(Math.sin(i * 2.3 + articleIdx));
+          ctx.fillStyle   = getCSSVar('--bar-biz');
+          ctx.globalAlpha = cardAlpha * a * (0.2 + v * 0.6);
+          ctx.fillRect(cellsX + i * (cellW + 1), cellsY, cellW, cellH);
+        }
+        ctx.globalAlpha = cardAlpha * a;
+
+        // "384-dim vector" label below cells — centred, readable
+        mono(ctx, 9);
+        ctx.fillStyle    = getCSSVar('--ink-light');
+        ctx.textAlign    = 'center';
+        ctx.textBaseline = 'top';
+        ctx.fillText('384-dim vector', L.CX, cellsY + cellH + 5);
+
+        ctx.restore();
+      }
+
+      // ── Connector: embedding → scores ───────────────────────────────
+      if (stage >= 2) {
+        const p = stage === 2 ? easeOut(stageP * 0.4) : 1;
+        drawConnector(ctx, L.CX, L.ROW_EMBED + Math.round(H*0.04), L.CX, L.ROW_SCORES - Math.round(H*0.03), p, getCSSVar('--rule-heavy'));
+      }
+
+      // ── Stage 2+: Score bars ─────────────────────────────────────────
+      if (stage >= 2) {
+        const a   = stage === 2 ? easeOut(stageP) : 1;
+        const gap = Math.round(H * 0.048);
+        const bh  = L.BAR_H;
+
+        const bars = [
+          { label: 'TECH',  value: ex.tech,  color: getCSSVar('--bar-tech')  },
+          { label: 'BIZ',   value: ex.biz,   color: getCSSVar('--bar-biz')   },
+          { label: 'NOISE', value: ex.noise, color: getCSSVar('--bar-noise') },
+        ];
+
+        bars.forEach((b, i) => {
+          const animVal = stage === 2 ? b.value * easeOut(Math.max(0, stageP - i * 0.2)) : b.value;
+          drawScoreBar(ctx,
+            L.BAR_X, L.ROW_SCORES - bh/2 + i * (bh + gap),
+            L.BAR_W, bh,
+            animVal, b.color, b.label, a
+          );
+        });
+      }
+
+      // ── Connector: scores → gates ────────────────────────────────────
+      if (stage >= 3) {
+        const p = stage === 3 ? easeOut(stageP * 0.5) : 1;
+        drawConnector(ctx, L.CX, L.ROW_SCORES + Math.round(H*0.07), L.CX, L.ROW_GATES - Math.round(H*0.04), p, getCSSVar('--rule-heavy'));
+      }
+
+      // ── Stage 3+: Gate 1 decision ────────────────────────────────────
+      if (stage >= 3) {
+        const a         = stage === 3 ? easeOut(stageP) : 1;
+        const gate1pass = ex.tech >= 0.22 || ex.biz >= 0.22;
+        drawDecision(ctx, L.CX, L.ROW_GATES - Math.round(H*0.055),
+          gate1pass, 1, 'Score ≥ 0.22 on Tech or Biz', a);
+      }
+
+      // ── Stage 4+: Gate 2 decision ────────────────────────────────────
+      if (stage >= 4) {
+        const a         = stage === 4 ? easeOut(stageP) : 1;
+        const gate1pass = ex.tech >= 0.22 || ex.biz >= 0.22;
+        const gate2pass = gate1pass && (Math.max(ex.tech, ex.biz) > ex.noise);
+        drawDecision(ctx, L.CX, L.ROW_GATES + Math.round(H*0.03),
+          gate2pass, 2, 'Winning score > Noise score', a);
+      }
+
+      // ── Connector: gates → priority (only if passed) ─────────────────
+      const gate1pass = ex.tech >= 0.22 || ex.biz >= 0.22;
+      const gate2pass = gate1pass && (Math.max(ex.tech, ex.biz) > ex.noise);
+
+      if (stage >= 5 && gate2pass) {
+        const p = stage === 5 ? easeOut(stageP * 0.5) : 1;
+        drawConnector(ctx, L.CX, L.ROW_GATES + Math.round(H*0.06), L.CX, L.ROW_PRIORITY - Math.round(H*0.045), p, getCSSVar('--bar-tech'));
+      }
+
+      // ── Stage 5+: Priority score (only if passed both gates) ─────────
+      if (stage >= 5 && gate2pass) {
+        const a   = stage === 5 ? easeOut(stageP) : 1;
+        const bw  = Math.round(W * 0.56);
+        const bh  = Math.round(H * 0.082);
+        const bx  = L.CX - bw / 2;
+        const by  = L.ROW_PRIORITY - bh / 2;
+
+        ctx.save();
+        ctx.globalAlpha *= a;
+
+        ctx.fillStyle   = getCSSVar('--bar-tech');
+        ctx.globalAlpha *= 0.1;
+        ctx.fillRect(bx, by, bw, bh);
+        ctx.globalAlpha = a * cardAlpha;
+        ctx.strokeStyle = getCSSVar('--bar-tech');
+        ctx.lineWidth   = 1.5;
+        ctx.strokeRect(bx, by, bw, bh);
+
+        // "PRIORITY SCORE" label — centred at top of box, readable colour
+        mono(ctx, 8);
+        ctx.fillStyle    = getCSSVar('--ink-light');
+        ctx.textAlign    = 'center';
+        ctx.textBaseline = 'top';
+        ctx.fillText('PRIORITY SCORE', L.CX, by + 6);
+
+        // Full equation as one centred string — no offset, no gap
+        const relevance  = Math.max(ex.tech, ex.biz).toFixed(4);
+        const fullEq     = `${relevance} × ${ex.weight} (authority) = ${ex.priority.toFixed(4)}`;
+
+        // Measure where the = sign ends so we can colour the value differently
+        mono(ctx, 10);
+        const eqLeft  = `${relevance} × ${ex.weight} (authority) = `;
+        const leftW   = ctx.measureText(eqLeft).width;
+        mono(ctx, 13);
+        const valW    = ctx.measureText(ex.priority.toFixed(4)).width;
+        const totalW  = leftW + valW;
+        const startX  = L.CX - totalW / 2;
+
+        mono(ctx, 10);
+        ctx.fillStyle    = getCSSVar('--ink-light');
+        ctx.textAlign    = 'left';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(eqLeft, startX, by + bh * 0.65);
+
+        mono(ctx, 13);
+        ctx.fillStyle = getCSSVar('--bar-tech');
+        ctx.fillText(ex.priority.toFixed(4), startX + leftW, by + bh * 0.65);
+
+        ctx.restore();
+      }
+
+      // ── If failed — show rejection label ─────────────────────────────
+      if (stage >= 4 && !gate2pass) {
+        const a = stage === 4 ? easeOut(stageP) : 1;
+        ctx.save();
+        ctx.globalAlpha *= a * 0.6;
+        mono(ctx, 8);
+        ctx.fillStyle    = getCSSVar('--bar-noise');
+        ctx.textAlign    = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText('ARTICLE REJECTED — NOT ENTERED INTO CURATED POOL', L.CX, L.ROW_PRIORITY);
+        ctx.restore();
+      }
+
+      // ── Progress dots + pause icon ───────────────────────────────────
+      const dotCount   = PIPELINE_EXAMPLES.length;
+      const dotSpacing = 16;
+      const dotY       = H - Math.round(H * 0.028);
+      const dotsX      = L.CX - ((dotCount - 1) * dotSpacing) / 2;
+
+      for (let i = 0; i < dotCount; i++) {
+        ctx.beginPath();
+        ctx.arc(dotsX + i * dotSpacing, dotY, 3, 0, Math.PI * 2);
+        ctx.fillStyle   = getCSSVar(i === articleIdx ? '--ink-light' : '--rule');
+        ctx.globalAlpha = 1;
+        ctx.fill();
+      }
+
+      // Pause/play icon — drawn to the right of the dots
+      const iconX  = dotsX + (dotCount - 1) * dotSpacing + 20;
+      const iconY  = dotY;
+      const iconR  = 9;
+      const iconCol = getCSSVar(paused ? '--accent' : '--ink-faint');
+
+      // Circle
+      ctx.beginPath();
+      ctx.arc(iconX, iconY, iconR, 0, Math.PI * 2);
+      ctx.strokeStyle = iconCol;
+      ctx.lineWidth   = 1;
+      ctx.globalAlpha = 0.7;
+      ctx.stroke();
+      ctx.globalAlpha = 1;
+
+      ctx.fillStyle = iconCol;
+      if (paused) {
+        // Play triangle
+        ctx.beginPath();
+        ctx.moveTo(iconX - 2.5, iconY - 4);
+        ctx.lineTo(iconX + 5,   iconY);
+        ctx.lineTo(iconX - 2.5, iconY + 4);
+        ctx.closePath();
+        ctx.fill();
+      } else {
+        // Pause bars
+        const bw = 2.5, bh = 7, gap = 2;
+        ctx.fillRect(iconX - gap - bw, iconY - bh/2, bw, bh);
+        ctx.fillRect(iconX + gap,      iconY - bh/2, bw, bh);
+      }
+
+      ctx.restore();
+
+      animId = requestAnimationFrame(draw);
+    }
+
+    function start() {
+      if (animId) cancelAnimationFrame(animId);
+      stage = 0; stageStart = 0; articleIdx = 0;
+      setup();
+      animId = requestAnimationFrame(draw);
+    }
+
+    window.addEventListener('resize', () => {
+      if (animId) cancelAnimationFrame(animId);
+      clearTimeout(canvas._resizeTimer);
+      canvas._resizeTimer = setTimeout(start, 120);
+    });
+
+    start();
+  })();
+
+  // ── Init ─────────────────────────────────────────────────────────────────
+  // ── Analyst Agent Animation ─────────────────────────────────────────────
+  (function() {
+    const canvas = document.getElementById('analyst-canvas');
+    if (!canvas) return;
+
+    const DPR = window.devicePixelRatio || 1;
+    let W, H, animId;
+
+    // ── Phases ────────────────────────────────────────────────────────────
+    // 0: idle/intro        800ms   article title fades in
+    // 1: fetch-scan       2400ms   scan line sweeps, text lines appear, word count ticks
+    // 2: fetch-hold        600ms   full doc visible
+    // 3: gemini-feed      1800ms   text lines flow into gemini block
+    // 4: gemini-think     1000ms   model block pulses
+    // 5: summary-type     2200ms   summary types out word by word
+    // 6: hold             1400ms   full card visible
+    // 7: fade              500ms   fade out, loop
+    const PHASE_DUR = [800, 2400, 600, 1800, 1000, 2200, 1400, 500];
+    const TOTAL_PHASES = PHASE_DUR.length;
+
+    let phase      = 0;
+    let phaseStart = 0;
+
+    function easeOut(t)   { return 1 - Math.pow(1 - t, 3); }
+    function easeInOut(t) { return t < 0.5 ? 2*t*t : 1-Math.pow(-2*t+2,2)/2; }
+    function lerp(a, b, t) { return a + (b-a) * t; }
+
+    function mono(ctx, size) {
+      ctx.font = `500 ${Math.round(size * Math.min(W/700,1))}px 'IBM Plex Mono', monospace`;
+    }
+    function serif(ctx, size, weight) {
+      ctx.font = `${weight||400} ${Math.round(size * Math.min(W/700,1))}px 'Source Serif 4', serif`;
+    }
+
+    // ── Article data — top ranked from today's run ───────────────────────
+    const ARTICLE_TITLE = 'OpenAI and the Trump administration are negotiating a government stake in the AI';
+    const ARTICLE_URL   = 'the-decoder.com';
+    const SUMMARY_TEXT  = '';
+    const WORD_COUNT    = 800;
+    const LINE_COUNT    = 28;
+
+    function setup() {
+      W = canvas.offsetWidth || 700;
+      H = Math.round(W * 0.72);
+      canvas.width  = W * DPR;
+      canvas.height = H * DPR;
+      canvas.style.height = H + 'px';
+    }
+
+    function draw(ts) {
+      const ctx = canvas.getContext('2d');
+      ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
+
+      if (!phaseStart) phaseStart = ts;
+      const elapsed = ts - phaseStart;
+      const p  = Math.min(elapsed / PHASE_DUR[phase], 1);
+      const ep = easeOut(p);
+
+      if (elapsed >= PHASE_DUR[phase]) {
+        phaseStart = ts;
+        phase = (phase + 1) % TOTAL_PHASES;
+        if (phase === 0) setup();
+      }
+
+      // ── Background ───────────────────────────────────────────────────
+      ctx.fillStyle = getCSSVar('--paper-warm');
+      ctx.fillRect(0, 0, W, H);
+
+      const CX      = W / 2;
+      const cardPad = Math.round(W * 0.06);
+      const cardW   = W - cardPad * 2;
+      const docTop  = Math.round(H * 0.22);
+      const docH    = Math.round(H * 0.52);
+      const docX    = cardPad;
+
+      // Global fade for phase 7
+      const globalA = phase === 7 ? Math.max(0, 1 - p / 0.6) : 1;
+      ctx.save();
+      ctx.globalAlpha = globalA;
+
+      // ── Article title (phases 0+) ─────────────────────────────────
+      if (phase >= 0) {
+        const a = phase === 0 ? easeOut(p) : 1;
+        ctx.save();
+        ctx.globalAlpha *= a;
+        serif(ctx, 13, 700);
+        ctx.fillStyle    = getCSSVar('--ink');
+        ctx.textAlign    = 'center';
+        ctx.textBaseline = 'middle';
+        // Simple single-line truncation
+        const maxTitleW = cardW * 0.9;
+        let title = ARTICLE_TITLE;
+        mono(ctx, 13);
+        ctx.font = `700 ${Math.round(13 * Math.min(W/700,1))}px 'Source Serif 4', serif`;
+        while (ctx.measureText(title).width > maxTitleW && title.length > 20) {
+          title = title.slice(0, -4) + '...';
+        }
+        ctx.fillText(title, CX, Math.round(H * 0.10));
+
+        mono(ctx, 8);
+        ctx.fillStyle = getCSSVar('--ink-faint');
+        ctx.fillText(ARTICLE_URL, CX, Math.round(H * 0.16));
+        ctx.restore();
+      }
+
+      // ── Document frame ────────────────────────────────────────────
+      if (phase >= 1) {
+        const a = phase === 1 ? easeOut(p) : 1;
+        ctx.save();
+        ctx.globalAlpha *= a * 0.6;
+        ctx.strokeStyle = getCSSVar('--rule');
+        ctx.lineWidth   = 1;
+        ctx.strokeRect(docX, docTop, cardW, docH);
+        ctx.restore();
+      }
+
+      // ── Phase 1: Scan line + text lines appearing ─────────────────
+      if (phase >= 1 && phase <= 2) {
+        const scanProgress = phase === 1 ? ep : 1;
+        const scanY = docTop + docH * scanProgress;
+
+        // Text lines appearing behind scan
+        const lineH    = Math.round(docH / (LINE_COUNT + 2));
+        const lineMaxW = cardW * 0.82;
+        const lineX    = docX + cardW * 0.06;
+        const linesVisible = Math.floor(scanProgress * LINE_COUNT);
+
+        for (let i = 0; i < linesVisible; i++) {
+          const ly     = docTop + lineH * (i + 1);
+          // Vary line widths for realism
+          const seed   = (i * 7919) % 100;
+          const lw     = lineMaxW * (0.55 + (seed / 100) * 0.45);
+          const lastLine = i === linesVisible - 1;
+          ctx.fillStyle   = getCSSVar('--rule');
+          ctx.globalAlpha = globalA * (lastLine ? 0.4 : 0.7);
+          ctx.fillRect(lineX, ly, lastLine ? lw * 0.4 : lw, Math.max(2, lineH - 3));
+        }
+
+        // Scan line
+        if (phase === 1) {
+          ctx.strokeStyle = getCSSVar('--bar-biz');
+          ctx.lineWidth   = 1.5;
+          ctx.globalAlpha = globalA * 0.7;
+          ctx.beginPath();
+          ctx.moveTo(docX + 2, scanY);
+          ctx.lineTo(docX + cardW - 2, scanY);
+          ctx.stroke();
+
+          // TRAFILATURA label riding the scan line
+          mono(ctx, 8);
+          ctx.fillStyle    = getCSSVar('--bar-biz');
+          ctx.textAlign    = 'right';
+          ctx.textBaseline = 'bottom';
+          ctx.globalAlpha  = globalA * 0.9;
+          ctx.fillText('TRAFILATURA · FETCHING', docX + cardW - 6, scanY - 3);
+        }
+
+        // Word count ticking up
+        const wordsExtracted = Math.round(scanProgress * WORD_COUNT);
+        mono(ctx, 9);
+        ctx.fillStyle    = getCSSVar('--ink-light');
+        ctx.textAlign    = 'right';
+        ctx.textBaseline = 'bottom';
+        ctx.globalAlpha  = globalA;
+        ctx.fillText(`${wordsExtracted.toLocaleString()} words extracted`, docX + cardW - 6, docTop + docH + 16);
+      }
+
+      // ── Phase 3: Text lines flow into Gemini block ────────────────
+      if (phase === 3) {
+        const gemW  = Math.round(W * 0.38);
+        const gemH  = Math.round(H * 0.10);
+        const gemX  = CX - gemW / 2;
+        const gemY  = docTop + (docH - gemH) / 2;
+
+        // Remaining text lines shrink toward gemini block
+        const lineH    = Math.round(docH / (LINE_COUNT + 2));
+        const lineMaxW = cardW * 0.82;
+        const lineX    = docX + cardW * 0.06;
+
+        for (let i = 0; i < LINE_COUNT; i++) {
+          const ly0   = docTop + lineH * (i + 1);
+          const ly    = lerp(ly0, gemY + gemH / 2, ep);
+          const seed  = (i * 7919) % 100;
+          const lw0   = lineMaxW * (0.55 + (seed / 100) * 0.45);
+          const lw    = lw0 * (1 - ep * 0.85);
+          const lx    = lerp(lineX, CX - lw / 2, ep);
+          ctx.fillStyle   = getCSSVar('--rule');
+          ctx.globalAlpha = globalA * (1 - ep * 0.8);
+          ctx.fillRect(lx, ly, lw, Math.max(1, lineH - 3));
+        }
+
+        // Gemini block fades in
+        ctx.save();
+        ctx.globalAlpha = globalA * ep;
+        ctx.fillStyle   = getCSSVar('--bar-biz');
+        ctx.globalAlpha *= 0.1;
+        ctx.fillRect(gemX, gemY, gemW, gemH);
+        ctx.globalAlpha = globalA * ep;
+        ctx.strokeStyle = getCSSVar('--bar-biz');
+        ctx.lineWidth   = 1.5;
+        ctx.strokeRect(gemX, gemY, gemW, gemH);
+
+        mono(ctx, 9);
+        ctx.fillStyle    = getCSSVar('--ink-light');
+        ctx.textAlign    = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText('gemma-3-12b-it', CX, gemY + gemH / 2);
+        ctx.restore();
+      }
+
+      // ── Phase 4: Gemini block pulses ──────────────────────────────
+      if (phase === 4) {
+        const gemW  = Math.round(W * 0.38);
+        const gemH  = Math.round(H * 0.10);
+        const gemX  = CX - gemW / 2;
+        const gemY  = docTop + (docH - gemH) / 2;
+        const pulse = 0.5 + 0.5 * Math.sin(p * Math.PI * 5);
+
+        ctx.save();
+        ctx.shadowColor = getCSSVar('--bar-biz');
+        ctx.shadowBlur  = 10 * pulse;
+        ctx.fillStyle   = getCSSVar('--bar-biz');
+        ctx.globalAlpha = globalA * 0.12;
+        ctx.fillRect(gemX, gemY, gemW, gemH);
+        ctx.globalAlpha = globalA;
+        ctx.strokeStyle = getCSSVar('--bar-biz');
+        ctx.lineWidth   = 1.5;
+        ctx.strokeRect(gemX, gemY, gemW, gemH);
+        ctx.shadowBlur  = 0;
+
+        mono(ctx, 9);
+        ctx.fillStyle    = getCSSVar('--ink-light');
+        ctx.textAlign    = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText('gemma-3-12b-it', CX, gemY + gemH * 0.35);
+
+        mono(ctx, 7);
+        ctx.fillStyle    = getCSSVar('--bar-biz');
+        ctx.globalAlpha  = globalA * (0.4 + pulse * 0.6);
+        ctx.fillText('SYNTHESISING ···', CX, gemY + gemH * 0.68);
+        ctx.restore();
+      }
+
+      // ── Phase 5: Summary types out ────────────────────────────────
+      if (phase >= 5) {
+        const words       = SUMMARY_TEXT.split(' ');
+        const wordsShown  = phase === 5
+          ? Math.floor(ep * words.length)
+          : words.length;
+        const visibleText = words.slice(0, wordsShown).join(' ');
+
+        // Summary text area
+        const summaryX   = docX + cardW * 0.06;
+        const summaryW   = cardW * 0.88;
+        const summaryTop = docTop + Math.round(docH * 0.1);
+        const lineHeight = Math.round(H * 0.048);
+        const maxLines   = 5;
+
+        ctx.save();
+        ctx.globalAlpha *= phase === 5 ? easeOut(p) : 1;
+
+        // Wrap text manually
+        serif(ctx, 12, 300);
+        ctx.fillStyle    = getCSSVar('--ink-mid');
+        ctx.textAlign    = 'left';
+        ctx.textBaseline = 'top';
+        ctx.font = `300 italic ${Math.round(12 * Math.min(W/700,1))}px 'Source Serif 4', serif`;
+
+        const wds = visibleText.split(' ');
+        let lines = [], cur = '';
+        for (const w of wds) {
+          const test = cur ? cur + ' ' + w : w;
+          if (ctx.measureText(test).width > summaryW && cur) {
+            lines.push(cur); cur = w;
+            if (lines.length >= maxLines) break;
+          } else { cur = test; }
+        }
+        if (lines.length < maxLines && cur) lines.push(cur);
+
+        lines.forEach((line, i) => {
+          ctx.fillText(line, summaryX, summaryTop + i * lineHeight);
+        });
+
+        // Gemini model attribution
+        mono(ctx, 8);
+        ctx.fillStyle    = getCSSVar('--ink-faint');
+        ctx.textAlign    = 'right';
+        ctx.textBaseline = 'bottom';
+        ctx.fillText('gemma-3-12b-it · grounded synthesis', docX + cardW - 6, docTop + docH - 6);
+
+        ctx.restore();
+      }
+
+      ctx.restore(); // global alpha
+      animId = requestAnimationFrame(draw);
+    }
+
+    function start() {
+      if (animId) cancelAnimationFrame(animId);
+      phase = 0; phaseStart = 0;
+      setup();
+      animId = requestAnimationFrame(draw);
+    }
+
+    window.addEventListener('resize', () => {
+      if (animId) cancelAnimationFrame(animId);
+      clearTimeout(canvas._resizeTimer);
+      canvas._resizeTimer = setTimeout(start, 120);
+    });
+
+    start();
+  })();
+
+  // ── Init ─────────────────────────────────────────────────────────────────
+  window.addEventListener('DOMContentLoaded', () => {
+    renderSourceChart();
+    renderCards();
+  });
+  </script>
+
+</body>
+</html>
